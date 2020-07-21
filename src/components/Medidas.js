@@ -7,7 +7,7 @@ function Medidas() {
         fetchMedidas();
 
         return() => montadoRef.current = false;
-    });
+    }, []);
 
 const [medidas, setMedidas] = useState([]);
 const [visible, setVisible] = useState();
