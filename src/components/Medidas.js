@@ -23,7 +23,19 @@ const fetchMedidas = async () => {
 function nuevaMedida(){
   setVisible(visible ? false : true); 
   console.log(visible);
+}
 
+const  borrarMedida = async(id) =>{
+  await fetch(`http://www.maderaexteriores.com/medidas/?id=${id}`, {
+    method: "delete",
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+  })
+  .then( (response) => { 
+     console.log(response)
+  });
 }
 
   return (
@@ -53,8 +65,9 @@ function nuevaMedida(){
             <td>{medida.grosor}</td>
             <td>{medida.largo}</td>
             
-            <td><button onClick={nuevaMedida}>
-Borrar    </button></td>
+            <td>
+              <button onClick={borrarMedida(medida.id)}>Borrar</button>
+          </td>
         </tr>
             ))}
         

@@ -7,7 +7,28 @@ function NuevaMedidaForm(props) {
     const { value:Largo, bind:bindLargo, reset:resetLargo } = useInput('');
     const handleSubmit = (evt) => {
         evt.preventDefault();
-        alert(`Enviado ${ID} ${Ancho} ${Grosor} ${Largo}`);
+        fetch("http://www.maderaexteriores.com/medidas", {
+  method: "post",
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+  },
+  //make sure to serialize your JSON body
+  body: JSON.stringify({
+    medida:{
+      id:ID,
+      ancho:Ancho,
+      grosor:Grosor,
+      largo:Largo
+
+    }
+  })
+})
+.then( (response) => { 
+  console.log(props)
+   console.log(response)
+});
+        
         resetID();
         resetAncho();
         resetGrosor();
