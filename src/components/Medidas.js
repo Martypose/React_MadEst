@@ -1,15 +1,17 @@
 import React, {useState,useEffect,useRef} from 'react';
 import NameForm from './NuevaMedidaForm';
 function Medidas() {
+
+  const [medidas, setMedidas] = useState([]);
     const montadoRef = useRef(null);
     useEffect(() => {
         montadoRef.current = true;
         fetchMedidas();
 
         return() => montadoRef.current = false;
-    }, []);
+    },[]);
 
-const [medidas, setMedidas] = useState([]);
+
 const [visible, setVisible] = useState();
 
 const fetchMedidas = async () => {
@@ -25,55 +27,72 @@ function nuevaMedida(){
   console.log(visible);
 }
 
+function confirmacion() {
+  if (window.confirm('Seguro que quieres eliminar esta medida?')){
+    return true;
+  }
+  return false;
+
+  
+}
+
 const  borrarMedida = async(id) =>{
-  await fetch(`http://www.maderaexteriores.com/medidas/${id}`, {
-    method: "delete",
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-  })
-  .then( (response) => { 
-     console.log(response)
-  });
+  if(confirmacion()){
+
+    await fetch(`http://www.maderaexteriores.com/medidas/${id}`, {
+      method: "delete",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+    })
+    .then( (response) => { 
+       console.log(response)
+       fetchMedidas();
+    });
+
+  }
+ 
 }
 
   return (
       
 
-    <div>
+    <div className="medidas">
       <h1>Medidas</h1>
       <button onClick={nuevaMedida}>
       Nueva Medida
     </button>
-    <div>
-    {visible && <NameForm />}
-    </div>
-      <table>
-      <tbody>
-      <tr>
-        <th>ID</th>
-        <th>Ancho</th>
-        <th>Grosor</th>
-        <th>Largo</th>
-    </tr>
-      
-      {medidas.map(medida => (
-        <tr key={medida.id}>
-            <td>{medida.id}</td>
-            <td>{medida.ancho}</td>
-            <td>{medida.grosor}</td>
-            <td>{medida.largo}</td>
-            
-            <td>
-              <button onClick={() => { borrarMedida(medida.id) }}>Borrar</button>
-          </td>
-        </tr>
-            ))}
+    <div className="contenedor">
+      <div className="tabla">
+        <table>
+        <tbody>
+        <tr>
+          <th>ID</th>
+          <th>Ancho</th>
+          <th>Grosor</th>
+          <th>Largo</th>
+      </tr>
         
-        </tbody>
-      </table>
-    
+        {medidas.map(medida => (
+          <tr key={medida.id}>
+              <td>{medida.id}</td>
+              <td>{medida.ancho}</td>
+              <td>{medida.grosor}</td>
+              <td>{medida.largo}</td>
+              
+              <td>
+                <button onClick={() => { borrarMedida(medida.id) }}>Borrar</button>
+            </td>
+          </tr>
+              ))}
+          </tbody>
+        </table>
+        </div>
+        <div className="form">
+        {visible && <NameForm fetch={fetchMedidas} />}
+      </div>
+      </div>
     </div>
   );
 }

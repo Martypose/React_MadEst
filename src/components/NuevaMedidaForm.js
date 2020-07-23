@@ -25,8 +25,8 @@ function NuevaMedidaForm(props) {
   })
 })
 .then( (response) => { 
-  console.log(props)
    console.log(response)
+   props.fetch();
 });
         
         resetID();
