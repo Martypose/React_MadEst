@@ -26,7 +26,7 @@ function nuevaMedida(){
 }
 
 const  borrarMedida = async(id) =>{
-  await fetch(`http://www.maderaexteriores.com/medidas/?id=${id}`, {
+  await fetch(`http://www.maderaexteriores.com/medidas/${id}`, {
     method: "delete",
     headers: {
       'Accept': 'application/json',
@@ -66,7 +66,7 @@ const  borrarMedida = async(id) =>{
             <td>{medida.largo}</td>
             
             <td>
-              <button onClick={borrarMedida(medida.id)}>Borrar</button>
+              <button onClick={() => { borrarMedida(medida.id) }}>Borrar</button>
           </td>
         </tr>
             ))}
