@@ -15,8 +15,11 @@ nav{
   list-style: none;
 
 }
-table, th, td {
-  border: 1px solid black;
+th, td {
+  border: 2px solid #37323E;
+}
+table {
+  border: 5px solid black;
 }
 .medidas{
   margin: 10vh;
@@ -32,6 +35,7 @@ table, th, td {
 .contenedor{
 display: flex; 
 justify-content: flex-start;
+margin-top: 5vh;
 }
 
 a{
@@ -54,7 +58,7 @@ a:hover {
   box-sizing: border-box;
 }
 .formulario {
-  margin: 40px;
+  margin-left: 15%;
   padding: 10px;
   border: 5px solid black;
 }
