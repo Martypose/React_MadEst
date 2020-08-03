@@ -74,18 +74,17 @@ const  borrarMedida = async(id) =>{
           <th>Largo</th>
       </tr>
         
-        {medidas.map(medida => (
-          <tr key={medida.id}>
+        {medidas.map(medida => {
+            return (<tr key={medida.id}>
               <td>{medida.id}</td>
               <td>{medida.ancho}</td>
               <td>{medida.grosor}</td>
               <td>{medida.largo}</td>
-              
               <td>
                 <button onClick={() => { borrarMedida(medida.id) }}>Borrar</button>
             </td>
-          </tr>
-              ))}
+          </tr>); 
+})}
           </tbody>
         </table>
         </div>
