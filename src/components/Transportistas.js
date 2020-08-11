@@ -1,6 +1,6 @@
 import React, {useState,useEffect,useRef} from 'react';
+import Conductores from './Conductores';
 function Transportistas() {
-
   const [transportistas, setTransportistas] = useState([]);
     const montadoRef = useRef(null);
     useEffect(() => {
@@ -10,14 +10,28 @@ function Transportistas() {
         return() => montadoRef.current = false;
     },[]);
 
+    const [visible, setVisible] = useState();
+    const [transporte, setTransporte] = useState();
 
 const fetchTransportistas = async () => {
-    const data = await fetch('http://www.maderaexteriores.com/transporte/transportista');
+    const data = await fetch('http://www.maderaexteriores.com/transporte/transportista',{
+      method: 'GET',
+      headers:{
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      }});
     const transportistas = await data.json();
     if(montadoRef.current)
     setTransportistas(transportistas);
 
 };
+
+function verConductores(t){
+  setVisible(visible ? false : true);
+  setTransporte(t);
+  console.log(visible);
+}
+
 
   return (
     
@@ -36,17 +50,22 @@ const fetchTransportistas = async () => {
       </tr>
         
         {transportistas.map(transportista => {
+          let imagen = 'http://www.maderaexteriores.com/images/'+ transportista.firma;
             return (<tr key={transportista.cif}>
               <td>{transportista.cif}</td>
               <td>{transportista.nombre}</td>
               <td>{transportista.direccion}</td>
-              <td><img src='http://www.maderaexteriores.com/images/domingo.png' alt="firma del transportista"/></td>
-              <td><button onClick={() => { }}>Ver conductores</button></td>
+              <td><img src={imagen} alt="firma del transportista"/></td>
+              <td><button onClick={() => {verConductores(transportista.nombre)}}>Ver conductores</button></td>
               </tr>); 
 })}
           </tbody>
         </table>
         </div>
+        <div className="form">
+        {visible && <Conductores transportista={transporte} />}
+      </div>
+   
       </div>
     </div>
   );
