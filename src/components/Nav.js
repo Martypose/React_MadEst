@@ -14,7 +14,7 @@ function Nav() {
             <Link to='/Medidas'>
                 <li>Medidas</li>
             </Link>
-            <Link to='/Tranportistas'>
+            <Link to='/Transportistas'>
                 <li>Transportistas</li>
             </Link>
         </ul>
