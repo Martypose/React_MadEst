@@ -44,7 +44,7 @@ function verCantidades(cantidades){
   return (
       
 
-    <div className="paquetes">
+    <div className="contenido">
       <h1>Paquetes</h1>
     <div className="contenedor">
       <div className="tabla">
@@ -61,7 +61,7 @@ function verCantidades(cantidades){
       </tr>
         
         {paquetes.map(paquete => {
-            if(paquete.cantidades!=null){
+            if(paquete.cantidades!=='0'){
                 return (<tr key={paquete.ID}>
                     <td>{paquete.ID}</td>
                   <td>{paquete.medida}</td>
@@ -88,7 +88,7 @@ function verCantidades(cantidades){
           </tbody>
         </table>
         </div>
-        <div className="cantidades">
+        <div className="form">
         {visible && <Cantidades cantidades={cantidades}/> }
       </div>
       </div>

@@ -1,7 +1,7 @@
 import React from "react";
 
 function Cantidades(props) {
-    var array = JSON.parse("[" + props.cantidades + "]");   
+    var array = JSON.parse("[" + props.cantidades + "]");
     return (
         <div className="tabla">
         <table>

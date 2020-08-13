@@ -35,7 +35,7 @@ function verConductores(t){
 
   return (
     
-    <div className="transportistas">
+    <div className="contenido">
       <h1>Transportistas</h1>
 
     <div className="contenedor">

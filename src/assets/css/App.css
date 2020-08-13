@@ -21,7 +21,7 @@ th, td {
 table {
   border: 5px solid black;
 }
-.medidas{
+.contenido{
   margin: 10vh;
 }
 .tabla{
@@ -29,6 +29,7 @@ table {
   max-width: 40%;
 }
 .form{
+  margin-left: 5%;
   min-width: 40%;
   max-width: 40%;
 }

@@ -23,12 +23,7 @@ const fetchConductores = async () => {
 };
 
   return (
-    
-    <div className="transportistas">
-      <h1>Conductores</h1>
-
-    <div className="contenedor">
-      <div className="tabla">
+          <div className="tabla">
         <table>
         <tbody>
         <tr>
@@ -54,8 +49,6 @@ const fetchConductores = async () => {
           </tbody>
         </table>
         </div>   
-      </div>
-    </div>
     );
   }
   export default Conductores;
