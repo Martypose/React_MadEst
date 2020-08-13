@@ -56,7 +56,7 @@ function verConductores(t){
               <td>{transportista.nombre}</td>
               <td>{transportista.direccion}</td>
               <td><img src={imagen} alt="firma del transportista"/></td>
-              <td><button onClick={() => {verConductores(transportista.nombre)}}>Ver conductores</button></td>
+              <td><button onClick={() => {verConductores(transportista.cif)}}>Ver conductores</button></td>
               </tr>); 
 })}
           </tbody>

@@ -10,7 +10,7 @@ function Conductores(props) {
     },[]);
 
 const fetchConductores = async () => {
-    const data = await fetch('http://www.maderaexteriores.com/transporte/conductores',{
+    const data = await fetch('http://www.maderaexteriores.com/transporte/conductor',{
       method: 'GET',
       headers:{
         'Accept': 'application/json',
@@ -38,11 +38,18 @@ const fetchConductores = async () => {
       </tr>
         
         {conductores.map(conductor => {
-          let imagen = 'http://www.maderaexteriores.com/images/'+ conductor.firma;
-            return (<tr key={conductor.DNI}>
-              <td>{conductor.nombre}</td>
-              <td><img src={imagen} alt="firma del conductor"/></td>
-              </tr>); 
+            console.log(conductor.transportista);
+            if(conductor.transportista === props.transportista){
+                let imagen = 'http://www.maderaexteriores.com/images/'+ conductor.firma;
+                return (<tr key={conductor.DNI}>
+                    <td>{conductor.DNI}</td>
+                  <td>{conductor.nombre}</td>
+                  <td><img src={imagen} alt="firma del conductor"/></td>
+                  </tr>); 
+
+            }else {
+                return null;
+            }
 })}
           </tbody>
         </table>

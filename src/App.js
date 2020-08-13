@@ -5,6 +5,7 @@ import Medidas from './components/Medidas';
 import Transportistas from './components/Transportistas';
 import Home from './components/Home'
 import { BrowserRouter as Router, Switch, Route} from 'react-router-dom';
+import Paquetes from './components/Paquetes';
 
 function App() { 
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path='/' exact component={Home} />
           <Route path="/medidas" component={Medidas} />
           <Route path="/transportistas" component={Transportistas} />
+          <Route path="/paquetes" component={Paquetes} />
         </Switch>
       </Router>
     </div>
