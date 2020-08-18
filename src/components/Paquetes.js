@@ -8,6 +8,7 @@ function Paquetes() {
   const [cantidades, setCantidades] = useState([]);
   const [cantidadAnterior, setCantidadAnterior] = useState([]);
   const [medidaElegida, setMedidaElegida] = useState('Todas');
+  const [estadoElegido, setEstadoElegido] = useState('Ninguno');
   const [paquetesMostrar, setPaquetesMostrar] = useState(paquetes);
 
 
@@ -48,8 +49,9 @@ function verCantidades(cantidades){
 
 }
 
-let medidaMostrar = (medida) =>{
+function selectorPaquetes(medida=medidaElegida, estado=estadoElegido){
   if(montadoRef.current){
+    setVisible(false);
     setMedidaElegida(medida);
     let paquetesMostrar;
     if(medida==='Todas'){
@@ -59,15 +61,39 @@ let medidaMostrar = (medida) =>{
         return paquete.medida===medida;
       }))
     }
+    setPaquetesMostrar(paquetesMostrar);
 
-setPaquetesMostrar(paquetesMostrar)}
+    setEstadoElegido(estado);
+    let paquetesMostrarEstados;
+    if(estado==='Ninguno'){
+      paquetesMostrarEstados=paquetesMostrar;
+    }else{
+      paquetesMostrarEstados=(paquetesMostrar.filter(function(paquete){
+        return paquete.estado===estado;
+      }))
+    }
+setPaquetesMostrar(paquetesMostrarEstados)
+}
+
+
+
+
+}
+
+let medidaMostrar = (medida) =>{
+  selectorPaquetes(medida,undefined);
+ }
+
+ let estadoMostrar = (estado) =>{
+    selectorPaquetes(undefined,estado)
+    
  }
 
   return (
       
     <div className="contenido">
       <h1>Paquetes</h1>
-    <SelectMedidas medidaMostrar={medidaMostrar}/>
+    <SelectMedidas medidaMostrar={medidaMostrar} estadoMostrar={estadoMostrar}/>
     <div className="contenedor">
       <div className="tabla">
   <h2>Hay {paquetesMostrar.length} paquetes de {medidaElegida}</h2>
