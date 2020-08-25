@@ -2,6 +2,7 @@ import React, {useState,useEffect,useRef} from 'react';
 import { Checkbox } from '../hooks/inputCheckBox';
 function SelectMedidas(props) {
     const [checkEstados, setcheckEstados] = useState({});
+    const [checkCalidades, setcheckCalidades] = useState({});
     const [medidas, setMedidas] = useState([]);
     const montadoRef = useRef(null);
     useEffect(() => {
@@ -10,11 +11,11 @@ function SelectMedidas(props) {
         return() => montadoRef.current = false;
     },[]);
 
-    const handleChangeChecks = (event) => {
+    const handleChangeChecksEstados = (event) => {
         // updating an object instead of a Map
         let losOtros=[];
 
-        checkboxes.forEach(checkbox => {
+        checkboxesEstados.forEach(checkbox => {
             if(checkbox.name!==event.target.name){
                 losOtros.push(checkbox.name);
             }
@@ -24,16 +25,36 @@ function SelectMedidas(props) {
         let dos = losOtros[1];
         console.log(event.target.checked);
         props.estadoMostrar('Ninguno');
-        console.log('enviado... Ninguno');
         if(event.target.checked===true){
             props.estadoMostrar(event.target.name);
-            console.log('enviado... '+event.target.name);
         }
         setcheckEstados({...checkEstados, [event.target.name] : event.target.checked, [uno] : false, [dos] : false});
 
     }
+    const handleChangeChecksCalidades = (event) => {
+        // updating an object instead of a Map
+        let losOtros=[];
 
-    const checkboxes = [
+        checkboxesCalidades.forEach(checkbox => {
+            if(checkbox.name!==event.target.name){
+                losOtros.push(checkbox.name);
+            }
+
+        });
+        let uno = losOtros[0];
+        let dos = losOtros[1];
+        let tres = losOtros[2];
+        console.log(event.target.checked);
+        props.estadoMostrar('Ninguno');
+        if(event.target.checked===true){
+            props.calidadMostrar(event.target.name);
+        }
+        setcheckCalidades({...checkCalidades, [event.target.name] : event.target.checked, [uno] : false, [dos] : false, [tres] : false});
+
+    }
+    
+
+    const checkboxesEstados = [
         {
             name: 'stock',
             key: 'stock',
@@ -48,6 +69,28 @@ function SelectMedidas(props) {
             name: 'vendido',
             key: 'vendido',
             label: 'Vendidos',
+        }
+    ];
+    const checkboxesCalidades = [
+        {
+            name: 'Mala',
+            key: 'Mala',
+            label: 'Mala',
+        },
+        {
+            name: 'Normal',
+            key: 'Normal',
+            label: 'Normal',
+        },
+        {
+            name: 'Semilimpia',
+            key: 'Semilimpia',
+            label: 'Semilimpia',
+        },
+        {
+            name: 'Limpia',
+            key: 'Limpia',
+            label: 'Limpia',
         }
     ];
 
@@ -74,10 +117,19 @@ function handleChange(e) {
 })}
           </select>
       {
-          checkboxes.map(item => (
+          checkboxesEstados.map(item => (
               <label key={item.key}>
                   {item.name}
-                  <Checkbox name={item.name} checked={checkEstados[item.name]} onChange={handleChangeChecks} />
+                  <Checkbox name={item.name} checked={checkEstados[item.name]} onChange={handleChangeChecksEstados} />
+              </label>
+          ))
+      }
+      <hr></hr>
+      {
+          checkboxesCalidades.map(item => (
+              <label key={item.key}>
+                  {item.name}
+                  <Checkbox name={item.name} checked={checkCalidades[item.name]} onChange={handleChangeChecksCalidades} />
               </label>
           ))
       }

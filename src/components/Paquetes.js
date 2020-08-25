@@ -1,6 +1,6 @@
 import React, {useState,useEffect,useRef} from 'react';
 import Cantidades from './Cantidades';
-import SelectMedidas from './SelectMedidas';
+import SelectMedidas from './FiltrosPaquetes';
 function Paquetes() {
 
   const [paquetes, setPaquetes] = useState([]);
@@ -9,6 +9,7 @@ function Paquetes() {
   const [cantidadAnterior, setCantidadAnterior] = useState([]);
   const [medidaElegida, setMedidaElegida] = useState('Todas');
   const [estadoElegido, setEstadoElegido] = useState('Ninguno');
+  const [calidadElegida, setCalidadElegida] = useState('Ninguno');
   const [paquetesMostrar, setPaquetesMostrar] = useState(paquetes);
 
 
@@ -49,7 +50,7 @@ function verCantidades(cantidades){
 
 }
 
-function selectorPaquetes(medida=medidaElegida, estado=estadoElegido){
+function selectorPaquetes(medida=medidaElegida, estado=estadoElegido, calidad=calidadElegida){
   if(montadoRef.current){
     setVisible(false);
     setMedidaElegida(medida);
@@ -73,27 +74,37 @@ function selectorPaquetes(medida=medidaElegida, estado=estadoElegido){
       }))
     }
 setPaquetesMostrar(paquetesMostrarEstados)
+
+setCalidadElegida(calidad);
+    let paquetesMostrarCalidades;
+    if(calidad==='Ninguno'){
+      paquetesMostrarCalidades=paquetesMostrarEstados;
+    }else{
+      paquetesMostrarCalidades=(paquetesMostrarEstados.filter(function(paquete){
+        console.log(paquete.calidad);
+        return paquete.calidad===calidad;
+      }))
+    }
+    setPaquetesMostrar(paquetesMostrarCalidades);
 }
-
-
-
-
 }
 
 let medidaMostrar = (medida) =>{
-  selectorPaquetes(medida,undefined);
+  selectorPaquetes(medida,undefined,undefined);
  }
 
  let estadoMostrar = (estado) =>{
-    selectorPaquetes(undefined,estado)
-    
+    selectorPaquetes(undefined,estado,undefined);
+ }
+ let calidadMostrar = (calidad) =>{
+   selectorPaquetes(undefined,undefined,calidad);
  }
 
   return (
       
     <div className="contenido">
       <h1>Paquetes</h1>
-    <SelectMedidas medidaMostrar={medidaMostrar} estadoMostrar={estadoMostrar}/>
+    <SelectMedidas medidaMostrar={medidaMostrar} estadoMostrar={estadoMostrar} calidadMostrar={calidadMostrar}/>
     <div className="contenedor">
       <div  className='fixed_header'>
   <h2>Hay {paquetesMostrar.length} paquetes de {medidaElegida}</h2>
