@@ -95,20 +95,21 @@ let medidaMostrar = (medida) =>{
       <h1>Paquetes</h1>
     <SelectMedidas medidaMostrar={medidaMostrar} estadoMostrar={estadoMostrar}/>
     <div className="contenedor">
-      <div className="tabla">
+      <div  className='fixed_header'>
   <h2>Hay {paquetesMostrar.length} paquetes de {medidaElegida}</h2>
         <table>
-        <tbody>
-        <tr>
+          <thead>
+          <tr>
           <th>ID</th>
           <th>MEDIDA</th>
           <th>FECHA</th>
           <th>ESTADO</th>
           <th>Nº Piezas</th>
           <th>Cúbico</th>
-
+          <th>Piezas</th>
       </tr>
-        
+          </thead>
+        <tbody>
         {paquetesMostrar.map(paquete => {
             if(paquete.cantidades!=='0'){
                 return (<tr key={paquete.ID}>

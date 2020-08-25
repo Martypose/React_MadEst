@@ -20,6 +20,10 @@ function Nav() {
             <Link to='/Transportistas'>
                 <li>Transportistas</li>
             </Link>
+            <Link to='/Pedidos'>
+                <li>Pedidos</li>
+            </Link>
+
         </ul>
     </nav>
   );

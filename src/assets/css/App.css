@@ -24,10 +24,7 @@ table {
 .contenido{
   margin: 10vh;
 }
-.tabla{
-  min-width: 40%;
-  max-width: 40%;
-}
+
 .form{
   margin-left: 5%;
   min-width: 40%;
@@ -38,6 +35,33 @@ display: flex;
 justify-content: flex-start;
 margin-top: 0vh;
 }
+.fixed_header{
+  min-width: 40%;
+  max-width: 40%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+.fixed_header tbody{
+  display:block;
+  width: 100%;
+  overflow: auto;
+  height: 500px;
+}
+.fixed_header thead tr {
+  display: block;
+  width: 97%;
+}
+.fixed_header thead {
+  background: black;
+  color:#fff;
+}
+
+.fixed_header th, .fixed_header td {
+  padding: 5px;
+  text-align: center;
+  width: 200px;
+}
+
 img {
   height: 100px;
   width: auto;
