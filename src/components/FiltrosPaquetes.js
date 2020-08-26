@@ -45,7 +45,7 @@ function SelectMedidas(props) {
         let dos = losOtros[1];
         let tres = losOtros[2];
         console.log(event.target.checked);
-        props.estadoMostrar('Ninguno');
+        props.calidadMostrar('Ninguno');
         if(event.target.checked===true){
             props.calidadMostrar(event.target.name);
         }
@@ -119,6 +119,7 @@ function handleChange(e) {
       {
           checkboxesEstados.map(item => (
               <label key={item.key}>
+                  <span> </span>  
                   {item.name}
                   <Checkbox name={item.name} checked={checkEstados[item.name]} onChange={handleChangeChecksEstados} />
               </label>
@@ -128,6 +129,7 @@ function handleChange(e) {
       {
           checkboxesCalidades.map(item => (
               <label key={item.key}>
+                  <span> </span>  
                   {item.name}
                   <Checkbox name={item.name} checked={checkCalidades[item.name]} onChange={handleChangeChecksCalidades} />
               </label>
