@@ -3,10 +3,32 @@ import { useInput } from '../hooks/inputHook';
 
 function Pedidos() {
 const { value:Escritura, bind:bindEscritura, reset:resetEscritura } = useInput('');
-  const [valor, setValor] = useState('');
-  const usuarios = [
+const [clientes, setClientes] = useState([]);
+const [valor, setValor] = useState('');
+const usuarios = [
     'Martín','Juan','Pedro','Mauri', 'María', 'Raúl', 'Martina'
 ];
+
+const montadoRef = useRef(null);
+useEffect(() => {
+    montadoRef.current = true;
+    fecthClientes();
+            return() => montadoRef.current = false;
+},[]);
+
+const fecthClientes = async () => {
+const data = await fetch('http://www.maderaexteriores.com/clientes',{
+    method: 'GET',
+    headers:{
+      'Accept': 'application/json',
+      'Authorization' : 'Martin',
+      'Content-Type': 'application/json',
+    }});
+const paquetes = await data.json();
+
+if(montadoRef.current)
+setClientes(clientes);
+};
   const [usuariosMostrar, setUsuariosMostrar] = useState(usuarios);
     useEffect(() => {
             const usuariosEntontrados = usuarios.filter(usuario =>
