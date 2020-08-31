@@ -6,6 +6,7 @@ import Transportistas from './components/Transportistas';
 import Home from './components/Home'
 import { BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import Paquetes from './components/Paquetes';
+import Pedidos from './components/Pedidos';
 
 function App() { 
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/medidas" component={Medidas} />
           <Route path="/transportistas" component={Transportistas} />
           <Route path="/paquetes" component={Paquetes} />
+          <Route path="/pedidos" component={Pedidos} />
         </Switch>
       </Router>
     </div>
