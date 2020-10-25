@@ -28,7 +28,6 @@ function NuevaMedidaForm(props) {
    console.log(response)
    props.fetch();
 });
-        
         resetID();
         resetAncho();
         resetGrosor();

@@ -2,7 +2,7 @@ import React, {useState,useEffect,useRef} from 'react';
 import { useInput } from '../hooks/inputHook';
 
 function Pedidos() {
-const { value:Escritura, bind:bindEscritura, reset:resetEscritura } = useInput('');
+const { value:Escritura} = useInput('');
 const [clientes, setClientes] = useState([]);
 const [valor, setValor] = useState('');
 const montadoRef = useRef(null);
