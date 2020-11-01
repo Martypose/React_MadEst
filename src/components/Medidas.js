@@ -54,10 +54,7 @@ const  borrarMedida = async(id) =>{
   }
  
 }
-
   return (
-      
-
     <div className="contenido">
       <h1>Medidas</h1>
       <button onClick={nuevaMedida}>

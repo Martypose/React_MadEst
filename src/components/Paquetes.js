@@ -1,6 +1,6 @@
 import React, {useState,useEffect,useRef} from 'react';
-import Cantidades from './Cantidades';
 import SelectMedidas from './FiltrosPaquetes';
+import PopupExample from './modalExample';
 function Paquetes() {
 
   const [paquetes, setPaquetes] = useState([]);
@@ -131,7 +131,8 @@ let medidaMostrar = (medida) =>{
                   <td>{paquete.numpiezas}</td>
                   <td>{paquete.cubico}</td>
                   <td>
-                <button onClick={() => { verCantidades(paquete.cantidades) }}>Ver Piezas</button>
+                  <PopupExample cantidades={paquete.cantidades}/>
+               {/*  <button onClick={() => { verCantidades(paquete.cantidades) }}>Ver Piezas</button> */}
             </td>
               </tr>); 
             }else{
@@ -149,9 +150,6 @@ let medidaMostrar = (medida) =>{
           </tbody>
         </table>
         </div>
-        <div className="form">
-        {visible && <Cantidades cantidades={cantidades}/> }
-      </div>
       </div>
     </div>
   );
