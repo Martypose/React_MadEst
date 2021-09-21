@@ -15,12 +15,33 @@ nav{
   list-style: none;
 
 }
-th, td {
-  border: 2px solid #37323E;
+
+.tabla-datos{
+  border-collapse: collapse;
+  margin: 25px 0;
+  font-size: 0.9em;
+  min-width: 400px;
+
+
+} 
+.tabla-datos thead tr {
+  background-color: #009879;
+  color: #ffffff;
+  text-align: left;
+  font-weight: bold;
 }
-table {
-  border: 5px solid black;
+.tabla-datos th,
+.tabla-datos td {
+  padding: 12px 15px;
 }
+.tabla-datos tbody tr {
+  border-bottom: 1px solid #dddddd;
+}
+
+.tabla-datos tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
+}
+
 .contenido{
   margin: 10vh;
 }

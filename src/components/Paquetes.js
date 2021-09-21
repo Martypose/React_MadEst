@@ -108,7 +108,7 @@ let medidaMostrar = (medida) =>{
     <div className="contenedor">
       <div  className='fixed_header'>
   <h2>Hay {paquetesMostrar.length} paquetes de {medidaElegida}</h2>
-        <table>
+        <table className='tabla-datos'>
           <thead>
           <tr>
           <th>ID</th>
