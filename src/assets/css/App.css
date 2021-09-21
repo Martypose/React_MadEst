@@ -52,8 +52,8 @@ nav{
   max-width: 40%;
 }
 .contenedor{
-display: flex; 
-justify-content: flex-start;
+display: block; 
+justify-content: flex-end;
 margin-top: 0vh;
 }
 .fixed_header{
@@ -64,17 +64,19 @@ margin-top: 0vh;
 }
 .fixed_header tbody{
   display:block;
-  width: 100%;
-  overflow: auto;
+  width: 70%;
+  overflow:auto;
   height: 500px;
 }
+::-webkit-scrollbar {
+  display: none;
+}
 .fixed_header thead tr {
-  display: block;
-  width: 97%;
+  display:flex;
+  max-width: 70%;
 }
 .fixed_header thead {
-  background: black;
-  color:#fff;
+ max-width: 0px;
 }
 
 .fixed_header th, .fixed_header td {
