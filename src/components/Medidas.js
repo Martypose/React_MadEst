@@ -31,9 +31,7 @@ function confirmacion() {
   if (window.confirm('Seguro que quieres eliminar esta medida?')){
     return true;
   }
-  return false;
-
-  
+  return false; 
 }
 
 const  borrarMedida = async(id) =>{

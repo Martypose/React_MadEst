@@ -7,8 +7,15 @@ import Home from './components/Home'
 import { BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import Paquetes from './components/Paquetes';
 import Pedidos from './components/Pedidos';
+import Login from './components/Login';
 
 function App() { 
+
+  const token = localStorage.getItem('accessToken');
+
+  if(!token) {
+    return <Login />
+  }
   return (
     <div className="App">
       <Router>

@@ -1,8 +1,27 @@
 import React from 'react';
 import '../assets/css/App.css'
 import { Link } from 'react-router-dom';
+import swal from 'sweetalert';
+
 
 function Nav() {
+
+    function logOut(){
+        swal("Success", "Adios "+localStorage.getItem('username'), "success", {
+            buttons: false,
+            timer: 2000,
+          })
+          .then((value) => {
+            localStorage.removeItem("accessToken")
+            localStorage.removeItem("username")
+                window.location.href = "/login";
+    
+          });
+
+
+      }
+
+
   return (
     <nav>
         <Link to='/'>
@@ -23,6 +42,8 @@ function Nav() {
             <Link to='/Pedidos'>
                 <li>Pedidos</li>
             </Link>
+
+            <button onClick={() => { logOut() }}>Salir</button>
 
         </ul>
     </nav>
