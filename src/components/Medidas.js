@@ -15,8 +15,16 @@ function Medidas() {
 const [visible, setVisible] = useState();
 
 const fetchMedidas = async () => {
-    const data = await fetch('http://www.maderaexteriores.com/medidas');
+    const data = await fetch('http://localhost:8080/medidas',{
+      method: "get",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'auth-token': JSON.parse(localStorage.getItem('accessToken')).token
+      },
+    });
     const medidas = await data.json();
+    console.log(data)
     if(montadoRef.current)
     setMedidas(medidas);
 
@@ -37,11 +45,12 @@ function confirmacion() {
 const  borrarMedida = async(id) =>{
   if(confirmacion()){
 
-    await fetch(`http://www.maderaexteriores.com/medidas/${id}`, {
+    await fetch(`http://localhost:8080/medidas/${id}`, {
       method: "delete",
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'auth-token': JSON.parse(localStorage.getItem('accessToken')).token
       },
     })
     .then( (response) => { 
@@ -67,6 +76,10 @@ const  borrarMedida = async(id) =>{
           <th>Ancho</th>
           <th>Grosor</th>
           <th>Largo</th>
+          <th>esMedible</th>
+          <th>barroteado</th>
+          <th>homogeneo</th>
+          <th>calidad</th>
       </tr>
         
         {medidas.map(medida => {
@@ -75,6 +88,10 @@ const  borrarMedida = async(id) =>{
               <td>{medida.ancho}</td>
               <td>{medida.grosor}</td>
               <td>{medida.largo}</td>
+              <td>{medida.esMedible}</td>
+              <td>{medida.barroteado}</td>
+              <td>{medida.homogeneo}</td>
+              <td>{medida.calidad}</td>
               <td>
                 <button onClick={() => { borrarMedida(medida.id) }}>Borrar</button>
             </td>

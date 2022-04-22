@@ -7,11 +7,12 @@ function NuevaMedidaForm(props) {
     const { value:Largo, bind:bindLargo, reset:resetLargo } = useInput('');
     const handleSubmit = (evt) => {
         evt.preventDefault();
-        fetch("http://www.maderaexteriores.com/medidas", {
+        fetch("http://localhost:8080/medidas", {
   method: "post",
   headers: {
     'Accept': 'application/json',
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'auth-token': JSON.parse(localStorage.getItem('accessToken')).tokens
   },
   //make sure to serialize your JSON body
   body: JSON.stringify({
