@@ -21,6 +21,7 @@ function NuevaMedidaForm(props) {
       ancho:Ancho,
       grosor:Grosor,
       largo:Largo
+      
 
     }
   })
