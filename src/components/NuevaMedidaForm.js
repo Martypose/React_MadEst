@@ -5,6 +5,10 @@ function NuevaMedidaForm(props) {
     const { value:Ancho, bind:bindAncho, reset:resetAncho } = useInput('');
     const { value:Grosor, bind:bindGrosor, reset:resetGrosor } = useInput('');
     const { value:Largo, bind:bindLargo, reset:resetLargo } = useInput('');
+    const { value:EsMedible, bind:bindEsMedible, reset:resetEsMedible } = useInput('');
+    const { value:Barroteado, bind:bindBarroteado, reset:resetBarroteado } = useInput('');
+    const { value:Homogeneo, bind:bindHomogeneo, reset:resetHomogeneo } = useInput('');
+    const { value:Calidad, bind:bindCalidad, reset:resetCalidad } = useInput('');
     const handleSubmit = (evt) => {
         evt.preventDefault();
         fetch("http://localhost:8080/medidas", {
@@ -20,9 +24,11 @@ function NuevaMedidaForm(props) {
       id:ID,
       ancho:Ancho,
       grosor:Grosor,
-      largo:Largo
-      
-
+      largo:Largo,
+      esMedible:EsMedible,
+      barroteado:Barroteado,
+      homogeneo:Homogeneo,
+      calidad:Calidad
     }
   })
 })
@@ -34,6 +40,10 @@ function NuevaMedidaForm(props) {
         resetAncho();
         resetGrosor();
         resetLargo();
+        resetEsMedible();
+        resetBarroteado();
+        resetHomogeneo();
+        resetCalidad();
     }
     return (
       <form className='formulario' onSubmit={handleSubmit}>
@@ -46,12 +56,28 @@ function NuevaMedidaForm(props) {
           <input type="text" {...bindAncho} />
         </label>
         <label>
+          Largo:
+          <input type="text" {...bindLargo} />
+        </label>
+        <label>
           Grosor:
           <input type="text" {...bindGrosor} />
         </label>
         <label>
-          Largo:
-          <input type="text" {...bindLargo} />
+          EsMedible:
+          <input type="checkbox" {...bindEsMedible} />
+        </label>
+        <label>
+          Barroteado:
+          <input type="checkbox" {...bindBarroteado} />
+        </label>
+        <label>
+          Homogeneo:
+          <input type="checkbox" {...bindHomogeneo} />
+        </label>
+        <label>
+          Calidad:
+          <input type="text" {...bindCalidad} />
         </label>
         <input type="submit" value="Submit" />
       </form>
