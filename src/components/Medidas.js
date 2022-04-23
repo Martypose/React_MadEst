@@ -1,5 +1,7 @@
 import React, {useState,useEffect,useRef} from 'react';
 import NameForm from './NuevaMedidaForm';
+import swal from 'sweetalert';
+
 function Medidas() {
 
   const [medidas, setMedidas] = useState([]);
@@ -35,15 +37,33 @@ function nuevaMedida(){
   console.log(visible);
 }
 
-function confirmacion() {
-  if (window.confirm('Seguro que quieres eliminar esta medida?')){
-    return true;
-  }
-  return false; 
+async function confirmacion() {
+
+  if(!await swal({
+    title: "¿Seguro que quieres eliminar esta medida?",
+    text: "Una vez eliminada no podrá ser recuperada",
+    icon: "warning",
+    buttons: true,
+    dangerMode: true,
+  })
+  .then((willDelete) => {
+    if (willDelete) {
+      swal("Medida Eliminada", {
+        icon: "success",
+      });
+    } else {
+      swal("Medida no eliminada");
+    }
+  })){
+  return;
+  };
+
+
 }
 
 const  borrarMedida = async(id) =>{
   if(confirmacion()){
+    console.log('vamos a borrar medida')
 
     await fetch(`http://localhost:8080/medidas/${id}`, {
       method: "delete",

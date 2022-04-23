@@ -68,7 +68,6 @@ export default function Signin() {
         localStorage.setItem('accessToken', JSON.stringify(response['accessToken']));
         localStorage.setItem('username', JSON.stringify(response['username']));
         window.location.href = "/";
-
       });
     } else {
       swal("Failed", response.message, "error");
