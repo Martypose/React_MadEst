@@ -1,14 +1,15 @@
-import React from "react";
+import React, {useState} from 'react';
 import { useInput } from '../hooks/inputHook';
 function NuevaMedidaForm(props) {
     const { value:ID, bind:bindID, reset:resetID } = useInput('');
     const { value:Ancho, bind:bindAncho, reset:resetAncho } = useInput('');
     const { value:Grosor, bind:bindGrosor, reset:resetGrosor } = useInput('');
     const { value:Largo, bind:bindLargo, reset:resetLargo } = useInput('');
-    const { value:EsMedible, bind:bindEsMedible, reset:resetEsMedible } = useInput('');
-    const { value:Barroteado, bind:bindBarroteado, reset:resetBarroteado } = useInput('');
-    const { value:Homogeneo, bind:bindHomogeneo, reset:resetHomogeneo } = useInput('');
+    const [EsMedible, setEsMedible] = useState(false);
+    const [Barroteado, setBarroteado] = useState(false);
+    const [Homogeneo, setHomogeneo] = useState(false);
     const { value:Calidad, bind:bindCalidad, reset:resetCalidad } = useInput('');
+
     const handleSubmit = (evt) => {
         evt.preventDefault();
         fetch("http://localhost:8080/medidas", {
@@ -16,7 +17,7 @@ function NuevaMedidaForm(props) {
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
-    'auth-token': JSON.parse(localStorage.getItem('accessToken')).tokens
+    'auth-token': JSON.parse(localStorage.getItem('accessToken')).token
   },
   //make sure to serialize your JSON body
   body: JSON.stringify({
@@ -40,11 +41,17 @@ function NuevaMedidaForm(props) {
         resetAncho();
         resetGrosor();
         resetLargo();
-        resetEsMedible();
-        resetBarroteado();
-        resetHomogeneo();
         resetCalidad();
     }
+    const handleOnChangeEsMedible = () => {
+      setEsMedible(!EsMedible);
+    };
+    const handleOnChangeBarroteado = () => {
+      setBarroteado(!Barroteado);
+    };
+    const handleOnChangeHomogeneo = () => {
+      setHomogeneo(!Homogeneo);
+    };
     return (
       <form className='formulario' onSubmit={handleSubmit}>
         <label>
@@ -65,15 +72,27 @@ function NuevaMedidaForm(props) {
         </label>
         <label>
           EsMedible:
-          <input type="checkbox" {...bindEsMedible} />
+          <input
+          type="checkbox"
+          checked={EsMedible}
+          onChange={handleOnChangeEsMedible}
+        />
         </label>
         <label>
           Barroteado:
-          <input type="checkbox" {...bindBarroteado} />
+          <input
+          type="checkbox"
+          checked={Barroteado}
+          onChange={handleOnChangeBarroteado}
+        />
         </label>
         <label>
           Homogeneo:
-          <input type="checkbox" {...bindHomogeneo} />
+          <input
+          type="checkbox"
+          checked={Homogeneo}
+          onChange={handleOnChangeHomogeneo}
+        />
         </label>
         <label>
           Calidad:

@@ -37,9 +37,10 @@ function nuevaMedida(){
   console.log(visible);
 }
 
-async function confirmacion() {
 
-  if(!await swal({
+const  borrarMedida = async(id) =>{
+
+  swal({
     title: "¿Seguro que quieres eliminar esta medida?",
     text: "Una vez eliminada no podrá ser recuperada",
     icon: "warning",
@@ -48,37 +49,34 @@ async function confirmacion() {
   })
   .then((willDelete) => {
     if (willDelete) {
+      console.log('vamos a borrar medida')
+       fetch(`http://localhost:8080/medidas/${id}`, {
+        method: "delete",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'auth-token': JSON.parse(localStorage.getItem('accessToken')).token
+        },
+      })
+      .then( (response) => { 
+         console.log(response)
+         fetchMedidas();
+      });
+  
       swal("Medida Eliminada", {
         icon: "success",
       });
     } else {
-      swal("Medida no eliminada");
+      swal("Medida no eliminada");   
     }
-  })){
-  return;
-  };
+  });
 
 
-}
 
-const  borrarMedida = async(id) =>{
-  if(confirmacion()){
-    console.log('vamos a borrar medida')
 
-    await fetch(`http://localhost:8080/medidas/${id}`, {
-      method: "delete",
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'auth-token': JSON.parse(localStorage.getItem('accessToken')).token
-      },
-    })
-    .then( (response) => { 
-       console.log(response)
-       fetchMedidas();
-    });
 
-  }
+
+  
  
 }
   return (
