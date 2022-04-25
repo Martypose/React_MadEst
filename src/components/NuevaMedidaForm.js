@@ -95,7 +95,7 @@ function NuevaMedidaForm(props) {
       <form className='formulario' onSubmit={handleSubmit}>
         <label>
           ID:
-          <input type="text" {...bindID} />
+          <input type="text" {...bindID} required/>
         </label>
         <label>
           Ancho:
@@ -103,11 +103,11 @@ function NuevaMedidaForm(props) {
         </label>
         <label>
           Largo:
-          <input type="text" {...bindLargo} />
+          <input type="text" {...bindLargo} required/>
         </label>
         <label>
           Grosor:
-          <input type="text" {...bindGrosor} />
+          <input type="text" {...bindGrosor} required/>
         </label>
         <label>
           EsMedible:
@@ -134,7 +134,7 @@ function NuevaMedidaForm(props) {
         />
         </label>
         <label htmlFor="calidad">Calidad:</label>
-          <select name="calidad" id="calidad" onChange={handleChange} value={Calidad}>
+          <select name="calidad" id="calidad" onChange={handleChange} value={Calidad} required>
               <option key='Default' value="Elige una calidad">Elige una calidad</option>
           {calidades.map(calidad => {
             return (

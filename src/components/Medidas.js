@@ -5,13 +5,12 @@ import swal from 'sweetalert';
 function Medidas() {
 
   const [medidas, setMedidas] = useState([]);
-  const [calidades, setCalidades] = useState([]);
+
 
     const montadoRef = useRef(null);
     useEffect(() => {
         montadoRef.current = true;
         fetchMedidas();
-        fetchCalidades();
 
         return() => montadoRef.current = false;
     },[]);
@@ -35,19 +34,7 @@ const fetchMedidas = async () => {
 
 };
 
-const fetchCalidades = async () => {
-  const data = await fetch('http://localhost:8080/medidas',{
-    method: "get",
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'auth-token': JSON.parse(localStorage.getItem('accessToken')).token
-    },
-  });
-  const calidades = await data.json();
-  if(montadoRef.current)
-  setCalidades(calidades);
-};
+
 
 function nuevaMedida(){
   setVisible(visible ? false : true); 
