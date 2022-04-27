@@ -95,7 +95,14 @@ function SelectMedidas(props) {
     ];
 
 const fetchMedidas = async () => {
-    const data = await fetch('http://www.maderaexteriores.com/medidas');
+    const data = await fetch(`http://${process.env.REACT_APP_URL_API}/medidas`,{
+      method: "get",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'auth-token': JSON.parse(localStorage.getItem('accessToken')).token
+      },
+    });
     const medidas = await data.json();
     if(montadoRef.current)
     setMedidas(medidas);

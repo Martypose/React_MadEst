@@ -19,7 +19,7 @@ function Medidas() {
 const [visible, setVisible] = useState();
 
 const fetchMedidas = async () => {
-    const data = await fetch('http://localhost:8080/medidas',{
+    const data = await fetch(`http://${process.env.REACT_APP_URL_API}/medidas`,{
       method: "get",
       headers: {
         'Accept': 'application/json',
@@ -54,7 +54,7 @@ const  borrarMedida = async(id) =>{
   .then((willDelete) => {
     if (willDelete) {
       console.log('vamos a borrar medida')
-       fetch(`http://localhost:8080/medidas/${id}`, {
+       fetch(`http://${process.env.URL_API}/medidas/${id}`, {
         method: "delete",
         headers: {
           'Accept': 'application/json',

@@ -22,13 +22,13 @@ function Paquetes() {
     },[]);
 
 const fetchPaquetes = async () => {
-    const data = await fetch('http://www.maderaexteriores.com/paquetes',{
+    const data = await fetch(`http://${process.env.REACT_APP_URL_API}/paquetes` ,{
         method: 'GET',
-        headers:{
+        headers: {
           'Accept': 'application/json',
-          'Authorization' : 'Martin',
           'Content-Type': 'application/json',
-        }});
+          'auth-token': JSON.parse(localStorage.getItem('accessToken')).token
+        },});
     const paquetes = await data.json();
 
     if(montadoRef.current)

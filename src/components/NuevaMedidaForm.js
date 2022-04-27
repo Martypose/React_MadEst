@@ -15,7 +15,6 @@ function NuevaMedidaForm(props) {
 
     const montadoRef = useRef(null);
     useEffect(() => {
-      setCalidades([]);
         montadoRef.current = true;
         fetchCalidades();
         return() => montadoRef.current = false;
@@ -55,7 +54,7 @@ function NuevaMedidaForm(props) {
         setEsMedible(false);
         setBarroteado(false);
         setHomogeneo(false);
-        setCalidad('Elige una calidad')
+        setCalidad('Normal')
 
     }
     const handleOnChangeEsMedible = () => {
@@ -88,6 +87,7 @@ function NuevaMedidaForm(props) {
       const calidades = await data.json();
       if(montadoRef.current)
       setCalidades(calidades);
+      setCalidad('Normal');
     };
 
 
@@ -135,7 +135,6 @@ function NuevaMedidaForm(props) {
         </label>
         <label htmlFor="calidad">Calidad:</label>
           <select name="calidad" id="calidad" onChange={handleChange} value={Calidad} required>
-              <option key='Default' value="Elige una calidad">Elige una calidad</option>
           {calidades.map(calidad => {
             return (
             <option key={calidad.calidad} value={calidad.calidad}>{calidad.calidad}</option>
