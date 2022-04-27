@@ -4,9 +4,8 @@ import PopupExample from './modalExample';
 function Paquetes() {
 
   const [paquetes, setPaquetes] = useState([]);
+  const [medidas, setMedidas] = useState([]);
   const [visible, setVisible] = useState();
-  const [cantidades, setCantidades] = useState([]);
-  const [cantidadAnterior, setCantidadAnterior] = useState([]);
   const [medidaElegida, setMedidaElegida] = useState('Todas');
   const [estadoElegido, setEstadoElegido] = useState('Ninguno');
   const [calidadElegida, setCalidadElegida] = useState('Ninguno');
@@ -18,6 +17,7 @@ function Paquetes() {
     useEffect(() => {
         montadoRef.current = true;
         fetchPaquetes();
+        fetchMedidas();
                 return() => montadoRef.current = false;
     },[]);
 
@@ -37,18 +37,23 @@ const fetchPaquetes = async () => {
 
 };
 
-function verCantidades(cantidades){
-    if(cantidadAnterior===cantidades){
-        setVisible(visible ? false : true);
-    }else{
-        setVisible(true);
-    }
-    setCantidades(cantidades);
-    console.log(cantidades);
-    setCantidadAnterior(cantidades);
+const fetchMedidas = async () => {
+  const data = await fetch(`http://${process.env.REACT_APP_URL_API}/medidas` ,{
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'auth-token': JSON.parse(localStorage.getItem('accessToken')).token
+      },});
+  const medidas = await data.json();
+
+  if(montadoRef.current)
+  setMedidas(medidas);
+  console.log(medidas)
+
+};
 
 
-}
 
 function selectorPaquetes(medida=medidaElegida, estado=estadoElegido, calidad=calidadElegida){
   if(montadoRef.current){
@@ -82,6 +87,11 @@ setCalidadElegida(calidad);
     }else{
       paquetesMostrarCalidades=(paquetesMostrarEstados.filter(function(paquete){
         console.log(paquete.calidad);
+
+
+
+
+        //TOCARRRRRRRRRR
         return paquete.calidad===calidad;
       }))
     }
@@ -118,6 +128,7 @@ let medidaMostrar = (medida) =>{
           <th>Nº Piezas</th>
           <th>Cúbico</th>
           <th>Piezas</th>
+          <th>Calidad</th>
       </tr>
           </thead>
         <tbody>
@@ -132,8 +143,10 @@ let medidaMostrar = (medida) =>{
                   <td>{paquete.cubico}</td>
                   <td>
                   <PopupExample cantidades={paquete.cantidades}/>
-               {/*  <button onClick={() => { verCantidades(paquete.cantidades) }}>Ver Piezas</button> */}
             </td>
+            {medidas.filter(medida => medida.id===paquete.medida).map(medida => (
+        <td>{medida.calidad}</td>
+      ))}
               </tr>); 
             }else{
                 return (<tr key={paquete.ID}>
@@ -143,6 +156,10 @@ let medidaMostrar = (medida) =>{
                   <td>{paquete.estado}</td>
                   <td>{paquete.numpiezas}</td>
                   <td>{paquete.cubico}</td>
+                  <td></td>
+                  {medidas.filter(medida => medida.id===paquete.medida).map(medida => (
+        <td>{medida.calidad}</td>
+      ))}
               </tr>); 
             }
             
