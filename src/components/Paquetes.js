@@ -85,16 +85,17 @@ setCalidadElegida(calidad);
     if(calidad==='Ninguno'){
       paquetesMostrarCalidades=paquetesMostrarEstados;
     }else{
-      paquetesMostrarCalidades=(paquetesMostrarEstados.filter(function(paquete){
-        console.log(paquete.calidad);
+      
+      let idMedidasCalidadSeleccionada = medidas.filter(medida => medida.calidad===calidad).map(medida => (
+        medida.id
+      ));
+        console.log(calidad)
+      console.log(idMedidasCalidadSeleccionada);
 
+      paquetesMostrarCalidades = paquetesMostrarEstados.filter(paquete => idMedidasCalidadSeleccionada.includes(paquete.medida));
 
-
-
-        //TOCARRRRRRRRRR
-        return paquete.calidad===calidad;
-      }))
     }
+    
     setPaquetesMostrar(paquetesMostrarCalidades);
 }
 }

@@ -83,9 +83,9 @@ function SelectMedidas(props) {
             label: 'Normal',
         },
         {
-            name: 'SemiLimpa',
-            key: 'SemiLimpa',
-            label: 'SemiLimpa',
+            name: 'Semilimpia',
+            key: 'Semilimpia',
+            label: 'Semilimpia',
         },
         {
             name: 'Limpia',
