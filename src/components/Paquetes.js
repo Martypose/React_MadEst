@@ -85,13 +85,13 @@ setCalidadElegida(calidad);
     if(calidad==='Ninguno'){
       paquetesMostrarCalidades=paquetesMostrarEstados;
     }else{
-      
+
+      //filtrar el array de medidas, para aquellas cuya calidad sea la seleccionada, obtenemos un array con los ids de esas medidas
       let idMedidasCalidadSeleccionada = medidas.filter(medida => medida.calidad===calidad).map(medida => (
         medida.id
       ));
-        console.log(calidad)
-      console.log(idMedidasCalidadSeleccionada);
 
+    //filtramos el arrary de paquetes a mostrar, quedandonos con aquellos paquetes cuyos IDS esten en el array de IDS de medidas que hemos filtrado antes
       paquetesMostrarCalidades = paquetesMostrarEstados.filter(paquete => idMedidasCalidadSeleccionada.includes(paquete.medida));
 
     }
