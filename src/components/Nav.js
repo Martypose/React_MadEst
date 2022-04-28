@@ -1,51 +1,49 @@
 import React from 'react';
 import '../assets/css/App.css'
-import { Link } from 'react-router-dom';
 import swal from 'sweetalert';
-
+import { menuItems } from "../menuItems";
+import MenuItems from "./MenuItems";
 
 function Nav() {
 
     function logOut(){
-        swal("Success", "Adios "+localStorage.getItem('username'), "success", {
-            buttons: false,
-            timer: 2000,
-          })
-          .then((value) => {
-            localStorage.removeItem("accessToken")
-            localStorage.removeItem("username")
-                window.location.href = "/login";
-    
-          });
 
+      swal({
+        title: "¿Seguro que quieres salir de la app?",
+        text: "Tendras que iniciar sesión la prómixa vez que vengas",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+      })
+      .then((salir) => {
+        if (salir) {
+          console.log('Saliendo de la app')
+          swal(`Chao ${localStorage.getItem("username")}`, {
+            icon: "success",
+            timer: 2000, 
+            buttons: false 
+          }).then(() => {
+          localStorage.removeItem("accessToken")
+          localStorage.removeItem("username")
+          window.location.href = "/login";
+          })
+
+        } else {
+          swal("Un poco más de trabajo");   
+        }
+      });
 
       }
 
 
   return (
-    <nav>
-        <Link to='/'>
-            <h3>
-                MadeirasEstanqueiro
-            </h3>
-        </Link>
-        <ul className='nav-links'>
-            <Link to='/Medidas'>
-                <li>Medidas</li>
-            </Link>
-            <Link to='/Paquetes'>
-                <li>Paquetes</li>
-            </Link>
-            <Link to='/Transportistas'>
-                <li>Transportistas</li>
-            </Link>
-            <Link to='/Pedidos'>
-                <li>Pedidos</li>
-            </Link>
-
-            <button onClick={() => { logOut() }}>Salir</button>
-
-        </ul>
+     <nav>
+   <ul className="menus">
+    {menuItems.map((menu, index) => {
+        return <MenuItems items={menu} key={index} />;
+    })}
+    </ul>
+    <button className="Salir" onClick={() => { logOut() }}>Salir</button>
     </nav>
   );
 }

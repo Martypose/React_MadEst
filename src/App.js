@@ -1,11 +1,11 @@
 import React from 'react';
 import './assets/css/App.css';
 import Nav from './components/Nav';
-import Medidas from './components/Medidas';
+import VerMedidas from './components/VerMedidas';
 import Transportistas from './components/Transportistas';
 import Home from './components/Home'
 import { BrowserRouter as Router, Switch, Route} from 'react-router-dom';
-import Paquetes from './components/Paquetes';
+import VerPaquetes from './components/VerPaquetes';
 import Pedidos from './components/Pedidos';
 import Login from './components/Login';
 
@@ -22,9 +22,9 @@ function App() {
         <Nav />
         <Switch>
           <Route path='/' exact component={Home} />
-          <Route path="/medidas" component={Medidas} />
+          <Route path="/medidas" component={VerMedidas} />
           <Route path="/transportistas" component={Transportistas} />
-          <Route path="/paquetes" component={Paquetes} />
+          <Route path="/paquetes" component={VerPaquetes} />
           <Route path="/pedidos" component={Pedidos} />
         </Switch>
       </Router>
