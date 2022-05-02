@@ -1,6 +1,7 @@
 import React, {useState,useEffect,useRef} from 'react';
 import SelectMedidas from './FiltrosPaquetes';
 import PopupExample from './modalExample';
+import { getRefreshToken } from '../session/refreshToken';
 function Paquetes() {
 
   const [paquetes, setPaquetes] = useState([]);
@@ -44,7 +45,13 @@ const fetchMedidas = async () => {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
         'auth-token': JSON.parse(localStorage.getItem('accessToken')).token
-      },});
+      }}).then(data => {
+        console.log('pedir nuevo token');
+
+      const response = getRefreshToken(localStorage.getItem('refreshToken')).token;
+
+
+      });
   const medidas = await data.json();
 
   if(montadoRef.current)

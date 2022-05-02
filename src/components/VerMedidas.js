@@ -1,11 +1,12 @@
 import React, {useState,useEffect,useRef} from 'react';
 import NameForm from './NuevaMedidaForm';
 import swal from 'sweetalert';
+const axios = require('axios').default;
+
 
 function Medidas() {
 
   const [medidas, setMedidas] = useState([]);
-
 
     const montadoRef = useRef(null);
     useEffect(() => {
@@ -18,19 +19,22 @@ function Medidas() {
 
 const [visible, setVisible] = useState();
 
-const fetchMedidas = async () => {
-    const data = await fetch(`http://${process.env.REACT_APP_URL_API}/medidas`,{
-      method: "get",
+const fetchMedidas = () => {
+  console.log(localStorage.getItem('accessToken'))
+    axios.get(`http://${process.env.REACT_APP_URL_API}/medidas`,{
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'auth-token': JSON.parse(localStorage.getItem('accessToken')).token
+        'auth-token': localStorage.getItem('accessToken')
       },
+    }).then(response => {
+      const medidas = response.data;
+      if(montadoRef.current)
+      setMedidas(medidas);
     });
-    const medidas = await data.json();
-    console.log(data)
-    if(montadoRef.current)
-    setMedidas(medidas);
+    
+
+
 
 };
 
@@ -54,12 +58,11 @@ const  borrarMedida = async(id) =>{
   .then((willDelete) => {
     if (willDelete) {
       console.log('vamos a borrar medida')
-       fetch(`http://${process.env.URL_API}/medidas/${id}`, {
-        method: "delete",
+       axios.delete(`http://${process.env.REACT_APP_URL_API}/medidas/${id}`, {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'auth-token': JSON.parse(localStorage.getItem('accessToken')).token
+          'auth-token': localStorage.getItem('accessToken')
         },
       })
       .then( (response) => { 

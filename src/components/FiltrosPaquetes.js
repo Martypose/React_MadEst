@@ -1,5 +1,8 @@
 import React, {useState,useEffect,useRef} from 'react';
 import { Checkbox } from '../hooks/inputCheckBox';
+const axios = require('axios').default;
+
+
 function SelectMedidas(props) {
     const [checkEstados, setcheckEstados] = useState({});
     const [checkCalidades, setcheckCalidades] = useState({});
@@ -95,8 +98,7 @@ function SelectMedidas(props) {
     ];
 
 const fetchMedidas = async () => {
-    const data = await fetch(`http://${process.env.REACT_APP_URL_API}/medidas`,{
-      method: "get",
+    const data = await axios.get(`http://${process.env.REACT_APP_URL_API}/medidas`,{
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',

@@ -19,8 +19,9 @@ const data = await fetch('http://www.maderaexteriores.com/clientes',{
       'Accept': 'application/json',
       'Authorization' : 'Martin',
       'Content-Type': 'application/json',
-    }});
+    }}.catch(error => console.error(error)));
 const clientes = await data.json();
+
 if(montadoRef.current)
 setClientes(clientes);
 setClientesMostrar(clientes);
