@@ -1,27 +1,31 @@
 const axios = require('axios').default;
-
-export async function getRefreshToken(refreshToken) {
-    return fetch(`http://${process.env.REACT_APP_URL_API}/refreshtoken`, {
-      method: 'GET',
+export async function getRefreshToken(refreshToken,username) {
+  console.log("refresh token es "+refreshToken)
+    return axios.get(`http://${process.env.REACT_APP_URL_API}/refreshtoken`, {
       headers: {
         'Content-Type': 'application/json',
-        'refreshToken': refreshToken
+        'refreshToken': refreshToken,
+        'username': username
       }
-    }).then(data => {
-        data.json()
+    }).then(response => {
+        console.log('pidiendo accesToken con refresh')
 
-        if ('accessToken' in data) {
-            localStorage.setItem('accessToken', JSON.stringify(data['accessToken']));
-            localStorage.setItem('refreshToken', JSON.stringify(data['refreshToken']));
-            localStorage.setItem('username', JSON.stringify(data['username']));
+        console.log(response)
+        if ('accessToken' in response.data) {
+          console.log('me sirven los tokens')
+          localStorage.setItem('accessToken', response.data['accessToken'].accessToken);
+          localStorage.setItem('refreshToken', response.data['refreshToken'].refreshToken);
+          localStorage.setItem('username', response.data['username']);
           } else {
-          localStorage.removeItem('refreshToken', JSON.stringify(data['refreshToken']));
-          localStorage.removeItem('accessToken', JSON.stringify(data['accessToken']));
-          localStorage.removeItem('username', JSON.stringify(data['username']));
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('username');
         }
+
+    }).catch(error => {
+      console.log(error)
 
     })
       
-
    }
 

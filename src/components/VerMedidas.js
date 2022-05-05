@@ -1,7 +1,7 @@
 import React, {useState,useEffect,useRef} from 'react';
 import NameForm from './NuevaMedidaForm';
 import swal from 'sweetalert';
-const axios = require('axios').default;
+import axios from 'axios';
 
 
 function Medidas() {
@@ -21,7 +21,7 @@ const [visible, setVisible] = useState();
 
 const fetchMedidas = () => {
   console.log(localStorage.getItem('accessToken'))
-    axios.get(`http://${process.env.REACT_APP_URL_API}/medidas`,{
+  axios.get(`http://${process.env.REACT_APP_URL_API}/medidas`,{
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ const  borrarMedida = async(id) =>{
   .then((willDelete) => {
     if (willDelete) {
       console.log('vamos a borrar medida')
-       axios.delete(`http://${process.env.REACT_APP_URL_API}/medidas/${id}`, {
+      axios.delete(`http://${process.env.REACT_APP_URL_API}/medidas/${id}`, {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
