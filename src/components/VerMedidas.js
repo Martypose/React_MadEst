@@ -25,7 +25,7 @@ const fetchMedidas = () => {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'auth-token': localStorage.getItem('accessToken')
+        'accessToken': localStorage.getItem('accessToken')
       },
     }).then(response => {
       const medidas = response.data;

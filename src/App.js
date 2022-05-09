@@ -9,28 +9,51 @@ import VerPaquetes from './components/VerPaquetes';
 import Pedidos from './components/Pedidos';
 import Login from './components/Login';
 import axios from 'axios';
-import {getRefreshToken} from './session/refreshToken';
 
 axios.interceptors.response.use((response) => {
   return response;
   }, (error) => {
       console.log('ei')
       const originalRequest = error.config;
-      if(error.response.status===301 && originalRequest._retry === false){
+      if(error.response.status===301 && !originalRequest._retry){
         originalRequest._retry = true;
       return axios.request(error.config);
       }
-    if (error.response.status===402) {
-
+    if (error.response.status===402 && !originalRequest._retry) {
       originalRequest._retry = true;
-      console.log(localStorage.getItem('accessToken'))
-      console.log(localStorage.getItem('username'))
-      getRefreshToken(localStorage.getItem('refreshToken'),localStorage.getItem('username'));   
-      console.log("dd")
-      console.log(localStorage.getItem('username'));
-      console.log(error.config)
-      console.log("ss")
-      return axios.request(error.config);
+      return axios.get(`http://${process.env.REACT_APP_URL_API}/refreshtoken`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'refreshToken': localStorage.getItem('refreshToken'),
+          'username': localStorage.getItem('username')
+        }
+      }).then(response => {
+          console.log('pidiendo accesToken con refresh')
+  
+          console.log(response)
+          if ('accessToken' in response.data) {
+            console.log('me sirven los tokens')
+            localStorage.setItem('accessToken', response.data['accessToken'].accessToken);
+            console.log("nuevo tokenaccess: "+response.data['accessToken'].accessToken)
+            localStorage.setItem('refreshToken', response.data['refreshToken'].refreshToken);
+            console.log("nuevo refresh: "+response.data['refreshToken'].refreshToken)
+            localStorage.setItem('username', response.data['username']);
+            error.config.headers.accessToken = localStorage.getItem('accessToken');
+            return axios.request(error.config);
+            } else {
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('username');
+          }
+  
+      }).catch(error => {
+        console.log(error)
+  
+      })
+     
+
+   
+      
     }
     return Promise.reject(error);
   });

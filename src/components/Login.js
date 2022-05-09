@@ -9,7 +9,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import swal from 'sweetalert';
-import {customAxios} from '../session/customAxios.js'
+import axios from 'axios';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 async function loginUser(credentials) {
-  return customAxios.post(`http://${process.env.REACT_APP_URL_API}/login`,credentials ,{
+  return axios.post(`http://${process.env.REACT_APP_URL_API}/login`,credentials ,{
     headers: {
       'Content-Type': 'application/json'
     }
