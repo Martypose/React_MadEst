@@ -4,8 +4,8 @@ const Dropdown = ({ submenus, dropdown }) => {
     return (
      <ul className={`dropdown ${dropdown ? "show" : ""}`}>
       {submenus.map((submenu, index) => (
-            <Link to={`/${submenu.url}`}>
-            <li classname="menu-items" key={index}>{submenu.title}</li>
+            <Link key={index} to={`/${submenu.url}`}>
+            <li className="menu-items" key={index}>{submenu.title}</li>
         </Link>
       ))}
      </ul>

@@ -13,7 +13,7 @@ import axios from 'axios';
 axios.interceptors.response.use((response) => {
   return response;
   }, (error) => {
-      console.log('ei')
+      console.log('Error en llamada, comprobando cual es...')
       const originalRequest = error.config;
       if(error.response.status===301 && !originalRequest._retry){
         originalRequest._retry = true;

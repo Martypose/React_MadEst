@@ -98,16 +98,18 @@ function SelectMedidas(props) {
     ];
 
 const fetchMedidas = async () => {
-    const data = await axios.get(`http://${process.env.REACT_APP_URL_API}/medidas`,{
+    await axios.get(`http://${process.env.REACT_APP_URL_API}/medidas`,{
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'auth-token': JSON.parse(localStorage.getItem('accessToken')).token
+        'accessToken': localStorage.getItem('accessToken')
       },
-    });
-    const medidas = await data.json();
-    if(montadoRef.current)
-    setMedidas(medidas);
+    }).then(response => {
+        const medidas = response.data;
+        if(montadoRef.current)
+        setMedidas(medidas);
+      });
+    
 };
 
 function handleChange(e) {

@@ -1,7 +1,7 @@
 import React, {useState,useEffect,useRef} from 'react';
 import SelectMedidas from './FiltrosPaquetes';
 import PopupExample from './modalExample';
-import { getRefreshToken } from '../session/refreshToken';
+import axios from 'axios';
 function Paquetes() {
 
   const [paquetes, setPaquetes] = useState([]);
@@ -23,40 +23,39 @@ function Paquetes() {
     },[]);
 
 const fetchPaquetes = async () => {
-    const data = await fetch(`http://${process.env.REACT_APP_URL_API}/paquetes` ,{
-        method: 'GET',
+    axios.get(`http://${process.env.REACT_APP_URL_API}/paquetes` ,{
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'auth-token': JSON.parse(localStorage.getItem('accessToken')).token
-        },});
-    const paquetes = await data.json();
+          'accessToken': localStorage.getItem('accessToken')
+        },}).then(response => {
 
-    if(montadoRef.current)
-    setPaquetes(paquetes);
-    setPaquetesMostrar(paquetes);
+          const paquetes = response.data;
+          if(montadoRef.current)
+          setPaquetes(paquetes);
+          setPaquetesMostrar(paquetes);
+          console.log(paquetes)
+
+        });
+  
+   
 
 };
 
 const fetchMedidas = async () => {
-  const data = await fetch(`http://${process.env.REACT_APP_URL_API}/medidas` ,{
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'auth-token': JSON.parse(localStorage.getItem('accessToken')).token
-      }}).then(data => {
-        console.log('pedir nuevo token');
-
-      const response = getRefreshToken(localStorage.getItem('refreshToken')).token;
-
+  axios.get(`http://${process.env.REACT_APP_URL_API}/medidas` ,{
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'accessToken': localStorage.getItem('accessToken')
+    },
+  }).then(response => {
+    const medidas = response.data;
+        if(montadoRef.current)
+        setMedidas(medidas);
+        console.log(medidas)
 
       });
-  const medidas = await data.json();
-
-  if(montadoRef.current)
-  setMedidas(medidas);
-  console.log(medidas)
 
 };
 
@@ -153,7 +152,7 @@ let medidaMostrar = (medida) =>{
                   <PopupExample cantidades={paquete.cantidades}/>
             </td>
             {medidas.filter(medida => medida.id===paquete.medida).map(medida => (
-        <td>{medida.calidad}</td>
+        <td key={medida.calidad}>{medida.calidad}</td>
       ))}
               </tr>); 
             }else{
