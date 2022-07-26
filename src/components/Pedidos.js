@@ -1,5 +1,6 @@
 import React, {useState,useEffect,useRef} from 'react';
 import { useInput } from '../hooks/inputHook';
+import axios from 'axios';
 
 function Pedidos() {
 const { value:Escritura} = useInput('');
@@ -13,18 +14,21 @@ useEffect(() => {
 },[]);
 
 const fecthClientes = async () => {
-const data = await fetch('http://www.maderaexteriores.com/clientes',{
-    method: 'GET',
+axios.get(`http://${process.env.REACT_APP_URL_API}/clientes`, {
     headers:{
       'Accept': 'application/json',
-      'Authorization' : 'Martin',
       'Content-Type': 'application/json',
-    }}.catch(error => console.error(error)));
-const clientes = await data.json();
+      'accessToken': localStorage.getItem('accessToken')
+    },
+  }).then(response => {
+      const clientes = response.data
+      if(montadoRef.current)
+      setClientes(clientes);
+      setClientesMostrar(clientes);
+    });
 
-if(montadoRef.current)
-setClientes(clientes);
-setClientesMostrar(clientes);
+
+
 };
   const [clientesMostrar, setClientesMostrar] = useState(clientes);
     useEffect(() => {
