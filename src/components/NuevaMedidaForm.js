@@ -22,7 +22,7 @@ function NuevaMedidaForm(props) {
 
     const handleSubmit = (evt) => {
         evt.preventDefault();
-        fetch("http://localhost:8080/medidas", {
+        fetch("https://localhost:8080/medidas", {
   method: "post",
   headers: {
     'Accept': 'application/json',
@@ -76,7 +76,7 @@ function NuevaMedidaForm(props) {
 
 
     const fetchCalidades = async () => {
-      const data = await fetch('http://localhost:8080/medidas/calidades',{
+      const data = await fetch('https://localhost:8080/medidas/calidades',{
         method: "get",
         headers: {
           'Accept': 'application/json',

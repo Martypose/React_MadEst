@@ -14,7 +14,7 @@ function Transportistas() {
     const [transporte, setTransporte] = useState();
 
 const fetchTransportistas = async () => {
-    const data = await fetch('http://www.maderaexteriores.com/transporte/transportista',{
+    const data = await fetch('https://www.maderaexteriores.com/transporte/transportista',{
       method: 'GET',
       headers:{
         'Accept': 'application/json',
@@ -50,7 +50,7 @@ function verConductores(t){
       </tr>
         
         {transportistas.map(transportista => {
-          let imagen = 'http://www.maderaexteriores.com/images/'+ transportista.firma;
+          let imagen = 'https://www.maderaexteriores.com/images/'+ transportista.firma;
             return (<tr key={transportista.cif}>
               <td>{transportista.cif}</td>
               <td>{transportista.nombre}</td>

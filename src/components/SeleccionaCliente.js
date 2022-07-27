@@ -13,7 +13,7 @@ useEffect(() => {
 },[]);
 
 const fecthClientes = async () => {
-const data = await fetch('http://www.maderaexteriores.com/clientes',{
+const data = await fetch('https://www.maderaexteriores.com/clientes',{
     method: 'GET',
     headers:{
       'Accept': 'application/json',

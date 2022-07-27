@@ -21,7 +21,7 @@ axios.interceptors.response.use((response) => {
       }
     if (error.response.status===402 && !originalRequest._retry) {
       originalRequest._retry = true;
-      return axios.get(`http://${process.env.REACT_APP_URL_API}/refreshtoken`, {
+      return axios.get(`https://${process.env.REACT_APP_URL_API}/refreshtoken`, {
         headers: {
           'Content-Type': 'application/json',
           'refreshToken': localStorage.getItem('refreshToken'),
