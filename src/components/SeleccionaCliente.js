@@ -13,7 +13,7 @@ useEffect(() => {
 },[]);
 
 const fecthClientes = async () => {
-const data = await fetch('https://www.maderaexteriores.com/clientes',{
+const data = await fetch('http://www.maderaexteriores.com/clientes',{
     method: 'GET',
     headers:{
       'Accept': 'application/json',
@@ -21,7 +21,7 @@ const data = await fetch('https://www.maderaexteriores.com/clientes',{
       'Content-Type': 'application/json',
     }});
 const clientes = await data.json();
-if(montadoRef.current)
+if(montadoRef.current)REACT_APP_URL_API
 setClientes(clientes);
 setClientesMostrar(clientes);
 };

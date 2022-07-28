@@ -14,7 +14,7 @@ useEffect(() => {
 },[]);
 
 const fecthClientes = async () => {
-axios.get(`http://${process.env.REACT_APP_URL_API}/clientes`, {
+axios.get(`${process.env.REACT_APP_URL_API}/clientes`, {
     headers:{
       'Accept': 'application/json',
       'Content-Type': 'application/json',
