@@ -23,7 +23,7 @@ function Paquetes() {
     },[]);
 
 const fetchPaquetes = async () => {
-    axios.get(`https://${process.env.REACT_APP_URL_API}/paquetes` ,{
+    axios.get(`${process.env.REACT_APP_URL_API}/paquetes` ,{
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ const fetchPaquetes = async () => {
 };
 
 const fetchMedidas = async () => {
-  axios.get(`https://${process.env.REACT_APP_URL_API}/medidas` ,{
+  axios.get(`${process.env.REACT_APP_URL_API}/medidas` ,{
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json',

@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 async function loginUser(credentials) {
-  return axios.post(`http://${process.env.REACT_APP_URL_API}/login`,credentials ,{
+  return axios.post(`${process.env.REACT_APP_URL_API}/login`,credentials ,{
     headers: {
       'Content-Type': 'application/json'
     }

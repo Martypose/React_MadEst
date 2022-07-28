@@ -98,7 +98,7 @@ function SelectMedidas(props) {
     ];
 
 const fetchMedidas = async () => {
-    await axios.get(`http://${process.env.REACT_APP_URL_API}/medidas`,{
+    await axios.get(`${process.env.REACT_APP_URL_API}/medidas`,{
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
