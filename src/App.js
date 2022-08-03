@@ -2,6 +2,7 @@ import React from 'react';
 import './assets/css/App.css';
 import Nav from './components/Nav';
 import VerMedidas from './components/VerMedidas';
+import InsertarNormal from './components/InsertarNormal';
 import Transportistas from './components/Transportistas';
 import Home from './components/Home'
 import { BrowserRouter as Router, Switch, Route} from 'react-router-dom';
@@ -73,6 +74,7 @@ function App() {
         <Switch>
           <Route path='/' exact component={Home} />
           <Route path="/medidas" component={VerMedidas} />
+          <Route path="/insertarnormal" component={InsertarNormal} />
           <Route path="/transportistas" component={Transportistas} />
           <Route path="/paquetes" component={VerPaquetes} />
           <Route path="/pedidos" component={Pedidos} />
