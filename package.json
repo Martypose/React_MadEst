@@ -15,6 +15,7 @@
     "react-modern-calendar-datepicker": "^3.1.6",
     "react-router-dom": "^5.3.1",
     "react-scripts": "^5.0.1",
+    "react-select": "^5.4.0",
     "reactjs-popup": "^2.0.4",
     "sweetalert": "^2.1.2"
   },

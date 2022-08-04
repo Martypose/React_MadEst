@@ -1,4 +1,5 @@
 import React, {useState,useEffect,useRef} from 'react';
+import Select from 'react-select'
 import SelectMedidas from './FiltrosPaquetes';
 import PopupExample from './modalExample';
 import swal from 'sweetalert';
@@ -6,6 +7,7 @@ import 'react-modern-calendar-datepicker/lib/DatePicker.css';
 import DatePicker from 'react-modern-calendar-datepicker';
 import axios from 'axios';
 import Paquetes from './VerPaquetes';
+import { BorderStyle } from '@material-ui/icons';
 function InsertarNormal() {
 
   const [medidas, setMedidas] = useState([]);
@@ -36,6 +38,11 @@ function InsertarNormal() {
         return() => montadoRef.current = false;
     },[]);
 
+    const selectStyles = {
+      menuPortal: base => ({ ...base, zIndex: 9999 }),
+      menu: provided => ({ ...provided, zIndex: "9999 !important" })
+  };
+
 
 const fetchMedidas = async () => {
   axios.get(`${process.env.REACT_APP_URL_API}/medidas` ,{
@@ -46,9 +53,18 @@ const fetchMedidas = async () => {
     },
   }).then(response => {
     const medidas = response.data;
+
+    let medidasParseadas= []
+
+
+    medidas.map(medida => {
+      medidasParseadas.push({value: medida.id, label: medida.id})
+   
+})
+
         if(montadoRef.current)
-        setMedidas(medidas);
-        console.log(medidas)
+        setMedidas(medidasParseadas);
+        console.log(medidasParseadas)
 
       });
 
@@ -119,11 +135,20 @@ function parseFecha(){
 }
 
 function handleChange(e) {
-  setMedidaElegida(e.target.value);
+  setMedidaElegida(e.value);
   setPaquete(paquete)
 }
 
-
+const renderCustomInput = ({ ref }) => (
+  <input
+    type={'text'}
+    readOnly
+    ref={ref} // necessary
+    placeholder="Elige la fecha"
+    value={fechaCreacion ? `${fechaCreacion.day}/${fechaCreacion.month}/${fechaCreacion.year}` : ''}
+    required // a styling class
+  />
+)
 
   return (
       
@@ -131,23 +156,22 @@ function handleChange(e) {
 
 <form className='formulario' onSubmit={handleSubmit} id='form-insert'>
 <label htmlFor="medidas">Elige una medida:</label>
-<select name="medidas" id="medidas" onChange={handleChange} required>
-              <option key='Default' value="Seleccione medida">Seleccione medida</option>
-          {medidas.map(medida => {
-            return (
-            <option key={medida.id} value={medida.id}>{medida.id}</option>
-            ); 
-})}
-          </select>
-          <DatePicker
-      value={fechaCreacion}
-      onChange={setFechaCreacion}
-      inputPlaceholder="Elige un día"
-      shouldHighlightWeekends
-        id='datepicker'
-      />
+<Select options={medidas} onChange={handleChange} styles={selectStyles}/>
 
-        <input type="submit" value="Submit" />
+
+
+<label htmlFor="datepicker">Elige una fecha:</label>
+<DatePicker
+      value={fechaCreacion}
+      className='datepicker'
+      onChange={setFechaCreacion}
+      renderInput={renderCustomInput}
+      shouldHighlightWeekends
+      id='datepicker'
+/>
+
+
+      <input type="submit" value="Submit" />
       </form>
       
     </div>
