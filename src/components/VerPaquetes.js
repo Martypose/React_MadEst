@@ -140,7 +140,7 @@ let medidaMostrar = (medida) =>{
           </thead>
         <tbody>
         {paquetesMostrar.map(paquete => {
-            if(paquete.cantidades!=='0'){
+            if(paquete.cantidades!=='0' && paquete.cantidades!==null){
                 return (<tr key={paquete.ID}>
                     <td>{paquete.ID}</td>
                   <td>{paquete.medida}</td>

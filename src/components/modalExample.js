@@ -18,6 +18,7 @@ function PopupExample(props){
                 <th>Cantidad</th>
       </tr>
       {array.map((cantidad, i) => {
+        console.log(cantidad+"-"+i)
           if(cantidad!==0){
             return(<tr key={i+8}>
                 <td>{i+8}</td>
@@ -32,9 +33,7 @@ function PopupExample(props){
           </tbody>
         </table>
         </div>
-            <a className="close" onClick={close}>
-              &times;
-            </a>
+
           </div>
         )}
       </Popup>

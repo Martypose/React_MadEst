@@ -1,6 +1,7 @@
 import React, {useState,useEffect,useRef} from 'react';
 import SelectMedidas from './FiltrosPaquetes';
 import PopupExample from './modalExample';
+import swal from 'sweetalert';
 import 'react-modern-calendar-datepicker/lib/DatePicker.css';
 import DatePicker from 'react-modern-calendar-datepicker';
 import axios from 'axios';
@@ -9,7 +10,7 @@ function InsertarNormal() {
 
   const [medidas, setMedidas] = useState([]);
   const [visible, setVisible] = useState();
-  const [medidaElegida, setMedidaElegida] = useState('Todas');
+  const [medidaElegida, setMedidaElegida] = useState(null);
   const [fechaCreacion, setFechaCreacion] = useState(null);
   const [fechaparseada, setFechaParseada] = useState(null);
   let [paquete, setPaquete] = useState(null);
@@ -32,7 +33,7 @@ function InsertarNormal() {
     useEffect(() => {
         montadoRef.current = true;
         fetchMedidas();
-                return() => montadoRef.current = false;
+        return() => montadoRef.current = false;
     },[]);
 
 
@@ -54,8 +55,9 @@ const fetchMedidas = async () => {
 };
 
 const handleSubmit = (evt) => {
-  parseFecha();
   evt.preventDefault();
+if(fechaCreacion!=null && medidaElegida!=null){
+  parseFecha();
   axios.post(`${process.env.REACT_APP_URL_API}/paquetes`,paquete ,{
     headers: {
       'Accept': 'application/json',
@@ -65,16 +67,54 @@ const handleSubmit = (evt) => {
 })
 .then( (response) => { 
 console.log(response)
+
+if(response.status==200){
+  swal("Success", response.data, "success", {
+    buttons: false,
+    timer: 2000,
+  })
+
+  document.getElementById('form-insert').reset();
+  setFechaCreacion(null);
+}
 });
+
+
+}else{
+
+  swal("Por favor seleccione medida y fecha del paquete a insertar", {
+    icon: "error",
+    timer: 2000,
+  });
+}
+
 
 
 }
 
 function parseFecha(){
 
-  let fechaParseada=(fechaCreacion.year).toString()+(fechaCreacion.month).toString()+(fechaCreacion.day).toString()
+  let año = (fechaCreacion.year).toString()
+
+  let mes
+  if( fechaCreacion.month<10){
+    mes = "0"+(fechaCreacion.month).toString()
+  }else{
+    mes = (fechaCreacion.month).toString()
+  }
+
+  let dia 
+  if( fechaCreacion.day<10){
+    dia = "0"+(fechaCreacion.day).toString()
+  }else{
+    dia = (fechaCreacion.day).toString()
+  }
+
+  let fechaParseada=año+mes+dia
 
   setFechaParseada(fechaParseada);
+  setPaquete(paquete)
+  console.log(paquete)
 
 }
 
@@ -89,10 +129,10 @@ function handleChange(e) {
       
     <div className="contenido">
 
-<form className='formulario' onSubmit={handleSubmit}>
+<form className='formulario' onSubmit={handleSubmit} id='form-insert'>
 <label htmlFor="medidas">Elige una medida:</label>
 <select name="medidas" id="medidas" onChange={handleChange} required>
-              <option key='Default' value="Todas">Todas</option>
+              <option key='Default' value="Seleccione medida">Seleccione medida</option>
           {medidas.map(medida => {
             return (
             <option key={medida.id} value={medida.id}>{medida.id}</option>
@@ -103,7 +143,9 @@ function handleChange(e) {
       value={fechaCreacion}
       onChange={setFechaCreacion}
       inputPlaceholder="Elige un día"
-      shouldHighlightWeekends/>
+      shouldHighlightWeekends
+        id='datepicker'
+      />
 
         <input type="submit" value="Submit" />
       </form>
