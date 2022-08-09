@@ -75,6 +75,7 @@ function App() {
           <Route path='/' exact component={Home} />
           <Route path="/medidas" component={VerMedidas} />
           <Route path="/insertarnormal" component={InsertarNormal} />
+          <Route path="/insertarmedido" component={InsertarNormal} />
           <Route path="/transportistas" component={Transportistas} />
           <Route path="/paquetes" component={VerPaquetes} />
           <Route path="/pedidos" component={Pedidos} />
