@@ -3,6 +3,8 @@ import Select from 'react-select'
 import swal from 'sweetalert';
 import 'react-modern-calendar-datepicker/lib/DatePicker.css';
 import DatePicker from 'react-modern-calendar-datepicker';
+import { useInput } from '../hooks/inputHook';
+
 import axios from 'axios';
 
 function InsertarMedido() {
@@ -13,18 +15,29 @@ function InsertarMedido() {
   const [fechaCreacion, setFechaCreacion] = useState(null);
   const [fechaparseada, setFechaParseada] = useState(null);
   let [paquete, setPaquete] = useState(null);
+  let [cantidades, setCantidades] = useState([40]);
+  
+
+
+
+
+
 
   paquete = {
     ID: 0,
     fechaCreacion: fechaparseada,
     estado: "stock",
-    cantidades: null,
+    cantidades: cantidades,
     cubico: null,
     numpiezas: null,
     medida: medidaElegida,
     fechaBajado: null,
     fechaVenta: null
 };
+
+
+
+
 
 
 
@@ -71,6 +84,12 @@ const handleSubmit = (evt) => {
   evt.preventDefault();
 if(fechaCreacion!=null && medidaElegida!=null){
   parseFecha();
+
+  setearCalidades();
+
+
+
+
   axios.post(`${process.env.REACT_APP_URL_API}/paquetes`,paquete ,{
     headers: {
       'Accept': 'application/json',
@@ -104,6 +123,21 @@ if(response.status==200){
 
 
 }
+
+function setearCantidades(){
+    
+    let cantidadesActuales = [40]
+
+    for (let i=0; i<40; i++){
+        cantidadesActuales.at(I)=
+
+        cantidades[i]
+
+    }
+
+  
+  }
+
 
 function parseFecha(){
 
@@ -166,8 +200,23 @@ const renderCustomInput = ({ ref }) => (
       shouldHighlightWeekends
       id='datepicker'
 />
-
-
+<table>
+            <tbody>
+              <tr>
+                <td className="ui header">Piezas</td>
+                <td>
+                {[...Array(40)].map((x, i) =>
+                <input  key={i+7} type="text" value={i+7} className="inputsModoTabla" readOnly/>
+                )}
+                </td>
+                <td>
+                {[...Array(40)].map((x, i) =>
+                <input  ref={"Piezas"+i} key={i} type="number" placeholder='0' value={...bind} className="inputsModoTabla"/>
+                )}
+                </td>
+              </tr>
+            </tbody>
+        </table>
       <input type="submit" value="Submit" />
       </form>
       
