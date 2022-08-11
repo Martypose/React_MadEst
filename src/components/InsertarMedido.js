@@ -14,14 +14,20 @@ function InsertarMedido() {
   const [medidaElegida, setMedidaElegida] = useState(null);
   const [fechaCreacion, setFechaCreacion] = useState(null);
   const [fechaparseada, setFechaParseada] = useState(null);
+ 
+
   let [paquete, setPaquete] = useState(null);
-  let [cantidades, setCantidades] = useState([40]);
+  const [cantidades, setCantidades] = useState(Array(40));
+  const [numpiezas,setNumpiezas] = useState(null);
   
+  const myRef = useRef([]);
+myRef.current = [];
 
-
-
-
-
+function addToRefs (el) {
+  if (el && !myRef.current.includes(el)) {
+    myRef.current.push(el);
+  }
+};
 
   paquete = {
     ID: 0,
@@ -29,7 +35,7 @@ function InsertarMedido() {
     estado: "stock",
     cantidades: cantidades,
     cubico: null,
-    numpiezas: null,
+    numpiezas: numpiezas,
     medida: medidaElegida,
     fechaBajado: null,
     fechaVenta: null
@@ -84,8 +90,9 @@ const handleSubmit = (evt) => {
   evt.preventDefault();
 if(fechaCreacion!=null && medidaElegida!=null){
   parseFecha();
+  setPaquete(paquete);
 
-  setearCalidades();
+  console.log(paquete)
 
 
 
@@ -124,19 +131,31 @@ if(response.status==200){
 
 }
 
+
 function setearCantidades(){
     
-    let cantidadesActuales = [40]
+let numpiezas = 0
+let cantidadesTemp = []
+myRef.current.forEach(input => {
 
-    for (let i=0; i<40; i++){
-        cantidadesActuales.at(I)=
-
-        cantidades[i]
-
-    }
-
-  
+  if(input.value!==''){
+    let cantidad=parseInt(input.value, 10)
+    cantidadesTemp.push(cantidad)
+    numpiezas+=cantidad
+  }else{
+    cantidadesTemp.push(0)
   }
+
+})
+
+setNumpiezas(numpiezas)
+setCantidades(cantidadesTemp)
+setPaquete(paquete)
+console.log(cantidades)
+
+}
+
+
 
 
 function parseFecha(){
@@ -211,7 +230,7 @@ const renderCustomInput = ({ ref }) => (
                 </td>
                 <td>
                 {[...Array(40)].map((x, i) =>
-                <input  ref={"Piezas"+i} key={i} type="number" placeholder='0' value={...bind} className="inputsModoTabla"/>
+                <input  ref={addToRefs} key={i} type="number" placeholder='0' className="inputsModoTabla" onChange={setearCantidades}/>
                 )}
                 </td>
               </tr>
