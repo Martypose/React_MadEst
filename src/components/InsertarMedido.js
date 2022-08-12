@@ -12,6 +12,7 @@ function InsertarMedido() {
   const [medidas, setMedidas] = useState([]);
   const [visible, setVisible] = useState();
   const [medidaElegida, setMedidaElegida] = useState(null);
+  const [medidaElegidaCompleta, setMedidaElegidaCompleta] = useState(null);
   const [fechaCreacion, setFechaCreacion] = useState(null);
   const [fechaparseada, setFechaParseada] = useState(null);
  
@@ -19,6 +20,7 @@ function InsertarMedido() {
   let [paquete, setPaquete] = useState(null);
   const [cantidades, setCantidades] = useState(Array(40));
   const [numpiezas,setNumpiezas] = useState(null);
+  const [cubico,setCubico] = useState(null);
   
   const myRef = useRef([]);
 myRef.current = [];
@@ -34,7 +36,7 @@ function addToRefs (el) {
     fechaCreacion: fechaparseada,
     estado: "stock",
     cantidades: cantidades,
-    cubico: null,
+    cubico: cubico,
     numpiezas: numpiezas,
     medida: medidaElegida,
     fechaBajado: null,
@@ -74,7 +76,8 @@ const fetchMedidas = async () => {
 
 
     medidas.map(medida => {
-      medidasParseadas.push({value: medida.id, label: medida.id})
+      if(medida.esMedible===1)
+      medidasParseadas.push({value: medida.id, label: medida.id, grosor: medida.grosor, largo: medida.largo })
    
 })
 
@@ -89,7 +92,7 @@ const fetchMedidas = async () => {
 const handleSubmit = (evt) => {
   evt.preventDefault();
 if(fechaCreacion!=null && medidaElegida!=null){
-  parseFecha();
+  parseFecha()
   setPaquete(paquete);
 
   console.log(paquete)
@@ -132,26 +135,70 @@ if(response.status==200){
 }
 
 
-function setearCantidades(){
-    
+
+/*
+
+Para calcular el cubico del paquete
+
+necesitamos el grosor y largo de la medida
+
+y luego recorremos las cantidades y hacemos (numpiezas) * (ancho*grosor*largo) y vamos sumando al total
+
+
+*/
+function calcularCubico() {
+
+
+
+  let index = 8
+  let cubic = 0
+
+  cantidades.forEach(cantidad =>{
+    if(cantidad!=0 && cantidad>0){
+      cubic += ((index*10) * (medidaElegidaCompleta.grosor*10) * (medidaElegidaCompleta.largo))/1000000000
+    }
+
+    index++
+  })
+
+cubic = cubic.toFixed(3)
+
+setCubico(cubic)
+
+
+}
+
+
+
+
+function setearCantidades() {
+
+let index = 8
+let cubic = 0
 let numpiezas = 0
 let cantidadesTemp = []
 myRef.current.forEach(input => {
 
   if(input.value!==''){
     let cantidad=parseInt(input.value, 10)
+    cubic += ((index*10) * (medidaElegidaCompleta.grosor*10) * (medidaElegidaCompleta.largo))/1000000000
     cantidadesTemp.push(cantidad)
     numpiezas+=cantidad
   }else{
     cantidadesTemp.push(0)
   }
 
+index++
 })
 
 setNumpiezas(numpiezas)
 setCantidades(cantidadesTemp)
+cubic = cubic.toFixed(3)
+setCubico(cubic)
 setPaquete(paquete)
 console.log(cantidades)
+
+
 
 }
 
@@ -185,8 +232,15 @@ function parseFecha(){
 }
 
 function handleChange(e) {
-  setMedidaElegida(e.value);
+  myRef.current.forEach(input => {
+
+    input.value=''
+  })
+  setearCantidades()
+  setMedidaElegida(e.value)
+  setMedidaElegidaCompleta(e)
   setPaquete(paquete)
+  
 }
 
 const renderCustomInput = ({ ref }) => (
@@ -225,7 +279,7 @@ const renderCustomInput = ({ ref }) => (
                 <td className="ui header">Piezas</td>
                 <td>
                 {[...Array(40)].map((x, i) =>
-                <input  key={i+7} type="text" value={i+7} className="inputsModoTabla" readOnly/>
+                <input  key={i+8} type="text" value={i+8} className="inputsModoTabla" readOnly/>
                 )}
                 </td>
                 <td>
