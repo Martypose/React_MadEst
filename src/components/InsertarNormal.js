@@ -6,15 +6,18 @@ import swal from 'sweetalert';
 import 'react-modern-calendar-datepicker/lib/DatePicker.css';
 import DatePicker from 'react-modern-calendar-datepicker';
 import axios from 'axios';
-import Paquetes from './VerPaquetes';
-import { BorderStyle } from '@material-ui/icons';
+import { useInput } from '../hooks/inputHook';
 function InsertarNormal() {
 
   const [medidas, setMedidas] = useState([]);
   const [visible, setVisible] = useState();
   const [medidaElegida, setMedidaElegida] = useState(null);
+  const [medidaPaquete, setMedidaPaquete] = useState(null);
+  const [cubico, setCubico] = useState(0);
+
   const [fechaCreacion, setFechaCreacion] = useState(null);
   const [fechaparseada, setFechaParseada] = useState(null);
+  const { value:numpiezas, bind:bindNumpiezas, reset:resetNumpiezas } = useInput('0');
   let [paquete, setPaquete] = useState(null);
 
   paquete = {
@@ -22,9 +25,9 @@ function InsertarNormal() {
     fechaCreacion: fechaparseada,
     estado: "stock",
     cantidades: null,
-    cubico: null,
-    numpiezas: null,
-    medida: medidaElegida,
+    cubico: cubico,
+    numpiezas: numpiezas,
+    medida: medidaPaquete,
     fechaBajado: null,
     fechaVenta: null
 };
@@ -58,7 +61,7 @@ const fetchMedidas = async () => {
 
 
     medidas.map(medida => {
-      medidasParseadas.push({value: medida.id, label: medida.id})
+      medidasParseadas.push({value: medida.id, label: medida.id,ancho:medida.ancho, grosor: medida.grosor, largo: medida.largo , homogeneo: medida.homogeneo})
    
 })
 
@@ -73,7 +76,13 @@ const fetchMedidas = async () => {
 const handleSubmit = (evt) => {
   evt.preventDefault();
 if(fechaCreacion!=null && medidaElegida!=null){
-  parseFecha();
+  //console.log(((parseInt(medidaElegida.ancho)*parseInt(medidaElegida.grosor)*parseInt(medidaElegida.largo))/1000000000)*numpiezas)
+ // paquete.cubico=(((parseInt(medidaElegida.ancho)*parseInt(medidaElegida.grosor)*parseInt(medidaElegida.largo))/1000000000)*numpiezas).toFixed(3)
+ calculaCubico()
+  console.log(paquete.cubico)
+  paquete.numpiezas = parseInt(numpiezas)
+  parseFecha()
+
   axios.post(`${process.env.REACT_APP_URL_API}/paquetes`,paquete ,{
     headers: {
       'Accept': 'application/json',
@@ -83,14 +92,17 @@ if(fechaCreacion!=null && medidaElegida!=null){
 })
 .then( (response) => { 
 console.log(response)
-
+resetNumpiezas()
+setVisible(false)
+setMedidaElegida(null)
+document.getElementById('form-insert').reset();
 if(response.status==200){
   swal("Success", response.data, "success", {
     buttons: false,
     timer: 2000,
   })
 
-  document.getElementById('form-insert').reset();
+
   setFechaCreacion(null);
 }
 });
@@ -128,16 +140,35 @@ function parseFecha(){
 
   let fechaParseada=año+mes+dia
 
+
   setFechaParseada(fechaParseada);
+  paquete.fechaCreacion = fechaParseada
   setPaquete(paquete)
-  console.log(paquete)
 
 }
 
 function handleChange(e) {
-  setMedidaElegida(e.value);
+setMedidaElegida(e)
+setMedidaPaquete(e.value)
+console.log(e)
+  if(e.homogeneo===1){
+    setVisible(true)
+  }else{
+    setVisible(false)
+  }
+  
+
   setPaquete(paquete)
 }
+
+function calculaCubico(){
+
+let cubico = 0
+  cubico=((medidaElegida.ancho*medidaElegida.grosor*medidaElegida.largo)/1000000000)*numpiezas
+
+  paquete.cubico=cubico.toFixed(3)
+}
+
 
 const renderCustomInput = ({ ref }) => (
   <input
@@ -156,10 +187,10 @@ const renderCustomInput = ({ ref }) => (
 
 <form className='formulario' onSubmit={handleSubmit} id='form-insert'>
 <label htmlFor="medidas">Elige una medida:</label>
-<Select options={medidas} onChange={handleChange} styles={selectStyles}/>
+<Select options={medidas} onChange={handleChange} styles={selectStyles} value={medidaElegida}/>
 
-
-
+{visible && <label htmlFor="piezas">Nº Piezas:</label>}
+{visible && <input type="number" {...bindNumpiezas} required /> }
 <label htmlFor="datepicker">Elige una fecha:</label>
 <DatePicker
       value={fechaCreacion}
@@ -169,10 +200,9 @@ const renderCustomInput = ({ ref }) => (
       shouldHighlightWeekends
       id='datepicker'
 />
-
-
+     
       <input type="submit" value="Submit" />
-      </form>
+</form>
       
     </div>
   );
