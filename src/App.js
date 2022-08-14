@@ -5,6 +5,7 @@ import VerMedidas from './components/VerMedidas';
 import InsertarNormal from './components/InsertarNormal';
 import InsertarMedido from './components/InsertarMedido';
 import Transportistas from './components/Transportistas';
+import DetallesPaquete from './components/DetallesPaquete';
 import Home from './components/Home'
 import { BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import VerPaquetes from './components/VerPaquetes';
@@ -80,6 +81,7 @@ function App() {
           <Route path="/transportistas" component={Transportistas} />
           <Route path="/paquetes" component={VerPaquetes} />
           <Route path="/pedidos" component={Pedidos} />
+          <Route path='/detallespaquete' component={DetallesPaquete} />
         </Switch>
       </Router>
     </div>

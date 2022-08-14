@@ -2,6 +2,7 @@ import React, {useState,useEffect,useRef} from 'react';
 import SelectMedidas from './FiltrosPaquetes';
 import PopupExample from './modalExample';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 function Paquetes() {
 
   const [paquetes, setPaquetes] = useState([]);
@@ -34,8 +35,6 @@ const fetchPaquetes = async () => {
           if(montadoRef.current)
           setPaquetes(paquetes);
           setPaquetesMostrar(paquetes);
-          console.log(paquetes)
-
         });
   
    
@@ -53,7 +52,6 @@ const fetchMedidas = async () => {
     const medidas = response.data;
         if(montadoRef.current)
         setMedidas(medidas);
-        console.log(medidas)
 
       });
 
@@ -154,6 +152,17 @@ let medidaMostrar = (medida) =>{
             {medidas.filter(medida => medida.id===paquete.medida).map(medida => (
         <td key={medida.calidad}>{medida.calidad}</td>
       ))}
+
+      <td><Link
+  to={{
+    pathname: "/detallespaquete",
+    state: {
+      paquete,
+    },
+  }}
+>
+  <button onClick={this}>Detalles</button>
+</Link></td>
               </tr>); 
             }else{
                 return (<tr key={paquete.ID}>
