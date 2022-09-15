@@ -134,6 +134,7 @@ let medidaMostrar = (medida) =>{
           <th>Cúbico</th>
           <th>Piezas</th>
           <th>Calidad</th>
+          <th>Detalles</th>
       </tr>
           </thead>
         <tbody>
