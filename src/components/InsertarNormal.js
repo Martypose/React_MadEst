@@ -17,7 +17,7 @@ function InsertarNormal() {
 
   const [fechaCreacion, setFechaCreacion] = useState(null);
   const [fechaparseada, setFechaParseada] = useState(null);
-  const { value:numpiezas, bind:bindNumpiezas, reset:resetNumpiezas } = useInput('0');
+  const { value:numpiezas, bind:bindNumpiezas, reset:resetNumpiezas } = useInput('');
   let [paquete, setPaquete] = useState(null);
 
   paquete = {

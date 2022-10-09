@@ -92,13 +92,8 @@ const fetchMedidas = async () => {
 const handleSubmit = (evt) => {
   evt.preventDefault();
 if(fechaCreacion!=null && medidaElegida!=null){
-  parseFecha()
-  setPaquete(paquete);
-
+  
   console.log(paquete)
-
-
-
 
   axios.post(`${process.env.REACT_APP_URL_API}/paquetes`,paquete ,{
     headers: {
@@ -146,29 +141,6 @@ y luego recorremos las cantidades y hacemos (numpiezas) * (ancho*grosor*largo) y
 
 
 */
-function calcularCubico() {
-
-
-
-  let index = 8
-  let cubic = 0
-
-  cantidades.forEach(cantidad =>{
-    if(cantidad!=0 && cantidad>0){
-      cubic += ((index*10) * (medidaElegidaCompleta.grosor*10) * (medidaElegidaCompleta.largo))/1000000000
-    }
-
-    index++
-  })
-
-cubic = cubic.toFixed(3)
-
-setCubico(cubic)
-
-
-}
-
-
 
 
 function setearCantidades() {
@@ -205,22 +177,24 @@ console.log(cantidades)
 
 
 
-function parseFecha(){
+function parseFecha(e){
 
-  let año = (fechaCreacion.year).toString()
+  setFechaCreacion(e)
+
+  let año = (e.year).toString()
 
   let mes
-  if( fechaCreacion.month<10){
-    mes = "0"+(fechaCreacion.month).toString()
+  if( e.month<10){
+    mes = "0"+(e.month).toString()
   }else{
-    mes = (fechaCreacion.month).toString()
+    mes = (e.month).toString()
   }
 
   let dia 
-  if( fechaCreacion.day<10){
-    dia = "0"+(fechaCreacion.day).toString()
+  if( e.day<10){
+    dia = "0"+(e.day).toString()
   }else{
-    dia = (fechaCreacion.day).toString()
+    dia = (e.day).toString()
   }
 
   let fechaParseada=año+mes+dia
@@ -268,7 +242,7 @@ const renderCustomInput = ({ ref }) => (
 <DatePicker
       value={fechaCreacion}
       className='datepicker'
-      onChange={setFechaCreacion}
+      onChange={e => { parseFecha(e) }}
       renderInput={renderCustomInput}
       shouldHighlightWeekends
       id='datepicker'

@@ -3,6 +3,7 @@ import SelectMedidas from './FiltrosPaquetes';
 import PopupExample from './modalExample';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { dameCalidad } from '../utils/utils.js';
 function Paquetes() {
 
   const [paquetes, setPaquetes] = useState([]);
@@ -56,6 +57,8 @@ const fetchMedidas = async () => {
       });
 
 };
+
+
 
 
 
@@ -128,7 +131,7 @@ let medidaMostrar = (medida) =>{
           <tr>
           <th>ID</th>
           <th>MEDIDA</th>
-          <th>FECHA</th>
+          <th>FECHA CREACION</th>
           <th>ESTADO</th>
           <th>Nº Piezas</th>
           <th>Cúbico</th>
@@ -150,15 +153,15 @@ let medidaMostrar = (medida) =>{
                   <td>
                   <PopupExample cantidades={paquete.cantidades}/>
             </td>
-            {medidas.filter(medida => medida.id===paquete.medida).map(medida => (
-        <td key={medida.calidad}>{medida.calidad}</td>
-      ))}
+        <td key={dameCalidad(paquete,medidas)}>{dameCalidad(paquete,medidas)}</td>
 
       <td><Link
   to={{
     pathname: "/detallespaquete",
     state: {
-      paquete,
+    paquete,
+    calidad: dameCalidad(paquete,medidas)
+
     },
   }}
 >
@@ -174,9 +177,19 @@ let medidaMostrar = (medida) =>{
                   <td>{paquete.numpiezas}</td>
                   <td>{paquete.cubico}</td>
                   <td></td>
-                  {medidas.filter(medida => medida.id===paquete.medida).map(medida => (
-        <td>{medida.calidad}</td>
-      ))}
+                  <td key={dameCalidad(paquete,medidas)}>{dameCalidad(paquete,medidas)}</td>
+                  <td><Link
+  to={{
+    pathname: "/detallespaquete",
+    state: {
+    paquete,
+    calidad: dameCalidad(paquete,medidas)
+
+    },
+  }}
+>
+  <button onClick={this}>Detalles</button>
+</Link></td>
               </tr>); 
             }
             
