@@ -3,7 +3,8 @@ import SelectMedidas from './FiltrosPaquetes';
 import PopupExample from './modalExample';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { dameCalidad } from '../utils/utils.js';
+import { dameCalidad,dameMedida } from '../utils/utils.js';
+
 function Paquetes() {
 
   const [paquetes, setPaquetes] = useState([]);
@@ -160,7 +161,7 @@ let medidaMostrar = (medida) =>{
     pathname: "/detallespaquete",
     state: {
     paquete,
-    calidad: dameCalidad(paquete,medidas)
+    medida: dameMedida(paquete,medidas)
 
     },
   }}
@@ -183,7 +184,7 @@ let medidaMostrar = (medida) =>{
     pathname: "/detallespaquete",
     state: {
     paquete,
-    calidad: dameCalidad(paquete,medidas)
+    medida: dameMedida(paquete,medidas)
 
     },
   }}

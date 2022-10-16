@@ -4,13 +4,22 @@ function DetallesPaquete(props) {
 
     const { state } = useLocation();
     let paquete = state.paquete
-    let calidad = state.calidad
+    let medida = state.medida
     const montadoRef = useRef(null);
     useEffect(() => {
-        console.log(paquete.paquete)
+        
         montadoRef.current = true;
+
         return() => montadoRef.current = false;
+      
     },[]);
+
+
+    function ponerBajado(paquete){
+
+
+
+    }
 
     
 
@@ -21,13 +30,14 @@ function DetallesPaquete(props) {
 
 
 <table className='tabla-datos'>
-        <tbody>
-        <thead>
+<thead>
           <tr>
           <h1>DETALLES DEL PAQUETE</h1>
           </tr>
+
+
           </thead>
-        
+        <tbody>        
         <tr>
           <td>ID</td>
           <th>{paquete.ID}</th>
@@ -37,9 +47,7 @@ function DetallesPaquete(props) {
           <td>MEDIDA</td>
           <th>{paquete.medida}</th>
           </tr>
-          
-      
-          
+
           <tr>
           <td>ESTADO</td>
           <th>{paquete.estado}</th>
@@ -49,6 +57,11 @@ function DetallesPaquete(props) {
           <td>FECHA CREACION</td>
           <th>{paquete.fechaCreacion}</th>
           </tr>
+
+          {(medida.homogeneo==0 && (paquete.numpiezas==null || paquete.numpiezas==0)) ? <tr>
+          <td>FECHA BAJADO</td>
+          <th>{paquete.fechaBajado}</th>
+          </tr> : null}
           
           <tr>
           <td>Nº Piezas</td>
@@ -63,7 +76,7 @@ function DetallesPaquete(props) {
                     
           <tr>
           <td>Calidad</td>
-          <th>{calidad}</th>
+          <th>{medida.calidad}</th>
           </tr>
           
           <tr>
