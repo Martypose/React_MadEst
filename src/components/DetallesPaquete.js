@@ -1,10 +1,27 @@
-import React, {useState,useEffect,useRef} from 'react';
-import { useLocation } from 'react-router-dom';
+import React, {useState,useEffect,useRef} from 'react'
+import { useLocation } from 'react-router-dom'
+import swal from 'sweetalert'
+import axios from 'axios'
+
 function DetallesPaquete(props) {
 
     const { state } = useLocation();
-    let paquete = state.paquete
     let medida = state.medida
+
+    let [paquete, setPaquete] = useState(state.paquete);
+    let [paqueteCambios, setPaqueteCambios] = useState(paquete);
+
+    paqueteCambios = {
+      ID: paquete.ID,
+      fechaCreacion: paquete.fechaCreacion,
+      estado: paquete.estado,
+      cantidades: paquete.cantidades,
+      cubico: paquete.cubico,
+      numpiezas: paquete.numpiezas,
+      medida: paquete.medida,
+      fechaBajado: paquete.fechaBajado,
+      fechaVenta: paquete.fechaVenta
+  };
     const montadoRef = useRef(null);
     useEffect(() => {
         
@@ -17,7 +34,62 @@ function DetallesPaquete(props) {
 
     function ponerBajado(paquete){
 
+      let date = new Date();
+	    let fechaHoy = date.getFullYear()+""+(date.getMonth()+1)+""+ date.getDate();
 
+      paqueteCambios.fechaBajado = fechaHoy
+      paqueteCambios.estado='bajado'
+
+      setPaqueteCambios(paqueteCambios)
+
+      axios.put(`${process.env.REACT_APP_URL_API}/paquetes`,paqueteCambios ,{
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'accessToken': localStorage.getItem('accessToken')
+        },
+    })
+    .then( (response) => { 
+    console.log(response)
+    if(response.status==200){
+      swal("Success", response.data, "success", {
+        buttons: false,
+        timer: 2000,
+      })
+    }
+
+
+    setPaquete(paqueteCambios)
+    });
+
+
+
+
+
+
+    }
+
+    function esBajable(paquete){
+
+      let bajable = false
+
+      if(paquete.fechaBajado==null){
+        bajable = true
+      }
+      
+      if(bajable){
+        return(
+          <th><button onClick={() => { ponerBajado(paquete.id) }}>Bajar</button></th>
+                )
+
+
+      }else{
+        return(
+          <th>{paquete.fechaBajado}</th>
+                )
+
+      }
+      
 
     }
 
@@ -32,7 +104,7 @@ function DetallesPaquete(props) {
 <table className='tabla-datos'>
 <thead>
           <tr>
-          <h1>DETALLES DEL PAQUETE</h1>
+          <th><h1>DETALLES DEL PAQUETE</h1></th>
           </tr>
 
 
@@ -60,7 +132,7 @@ function DetallesPaquete(props) {
 
           {(medida.homogeneo==0 && (paquete.numpiezas==null || paquete.numpiezas==0)) ? <tr>
           <td>FECHA BAJADO</td>
-          <th>{paquete.fechaBajado}</th>
+          {esBajable(paquete)}
           </tr> : null}
           
           <tr>
