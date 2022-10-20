@@ -2,9 +2,11 @@ import React, {useState,useEffect,useRef} from 'react'
 import { useLocation } from 'react-router-dom'
 import swal from 'sweetalert'
 import axios from 'axios'
+import { useHistory } from "react-router-dom";
 
 function DetallesPaquete(props) {
 
+    let history = useHistory();
     const { state } = useLocation();
     let medida = state.medida
 
@@ -32,7 +34,7 @@ function DetallesPaquete(props) {
     },[]);
 
 
-    function ponerBajado(paquete){
+    function ponerBajado(){
 
       let date = new Date();
 	    let fechaHoy = date.getFullYear()+""+(date.getMonth()+1)+""+ date.getDate();
@@ -69,6 +71,45 @@ function DetallesPaquete(props) {
 
     }
 
+
+    const  borrarPaquete = async(paquete) =>{
+
+      swal({
+        title: "¿Seguro que quieres eliminar esta paquete?",
+        text: "Una vez eliminada no podrá ser recuperado",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+      })
+      .then((willDelete) => {
+        if (willDelete) {
+          console.log('vamos a borrar paquete')
+          axios.delete(`${process.env.REACT_APP_URL_API}/paquetes/${paquete.ID}`, {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              'accessToken': localStorage.getItem('accessToken')
+            },
+          })
+          .then( (response) => { 
+             console.log(response)
+             swal("Paquete Eliminado", {
+              icon: "success",
+            });
+
+            history.goBack()
+            
+          });
+
+
+      
+ 
+        } else {
+          swal("Paquete no eliminado");   
+        }
+      });
+    }
+
     function esBajable(paquete){
 
       let bajable = false
@@ -79,7 +120,7 @@ function DetallesPaquete(props) {
       
       if(bajable){
         return(
-          <th><button onClick={() => { ponerBajado(paquete.id) }}>Bajar</button></th>
+          <th><button onClick={() => { ponerBajado() }}>Bajar</button></th>
                 )
 
 
@@ -153,6 +194,9 @@ function DetallesPaquete(props) {
           
           <tr>
           <td>Pedido</td>
+          </tr>
+          <tr>
+          <td><button onClick={() => { borrarPaquete(paquete) }}>Borrar Paquete</button></td>
           </tr>
       
 

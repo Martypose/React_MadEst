@@ -62,7 +62,7 @@ const  borrarMedida = async(id) =>{
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'auth-token': localStorage.getItem('accessToken')
+          'accessToken': localStorage.getItem('accessToken')
         },
       })
       .then( (response) => { 
@@ -77,14 +77,6 @@ const  borrarMedida = async(id) =>{
       swal("Medida no eliminada");   
     }
   });
-
-
-
-
-
-
-  
- 
 }
   return (
     <div className="contenido">
