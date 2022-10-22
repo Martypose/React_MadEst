@@ -4,6 +4,7 @@ import Nav from './components/Nav';
 import VerMedidas from './components/VerMedidas';
 import InsertarNormal from './components/InsertarNormal';
 import InsertarMedido from './components/InsertarMedido';
+import InsertarCliente from './components/InsertarCliente';
 import Transportistas from './components/Transportistas';
 import DetallesPaquete from './components/DetallesPaquete';
 import Home from './components/Home'
@@ -78,6 +79,7 @@ function App() {
           <Route path="/medidas" component={VerMedidas} />
           <Route path="/insertarnormal" component={InsertarNormal} />
           <Route path="/insertarmedido" component={InsertarMedido} />
+          <Route path="/insertarcliente" component={InsertarCliente} />
           <Route path="/transportistas" component={Transportistas} />
           <Route path="/paquetes" component={VerPaquetes} />
           <Route path="/pedidos" component={Pedidos} />

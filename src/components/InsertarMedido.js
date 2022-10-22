@@ -3,8 +3,6 @@ import Select from 'react-select'
 import swal from 'sweetalert';
 import 'react-modern-calendar-datepicker/lib/DatePicker.css';
 import DatePicker from 'react-modern-calendar-datepicker';
-import { useInput } from '../hooks/inputHook';
-
 import axios from 'axios';
 
 function InsertarMedido() {
@@ -114,7 +112,7 @@ if(response.status==200){
   document.getElementById('form-insert').reset();
   setFechaCreacion(null);
 }
-});
+})
 
 
 }else{
