@@ -13,7 +13,6 @@ function InsertarCliente() {
   let [cliente, setCliente] = useState(null);
 
   cliente = {
-    ID: 0,
     cif: cif,
     nombre: nombre,
     direccion: direccion,
@@ -30,12 +29,9 @@ function InsertarCliente() {
     },[]);
 
 
-    const handleSubmit = (evt) => {
+const handleSubmit = (evt) => {
   evt.preventDefault();
-
-  
   console.log(cliente)
-
   axios.post(`${process.env.REACT_APP_URL_API}/clientes`,cliente ,{
     headers: {
       'Accept': 'application/json',
@@ -52,52 +48,27 @@ if(response.status==200){
     timer: 2000,
   })
 
-  document.getElementById('form-insert').reset();
+  resetCif()
+  resetNombre()
+  resetDireccion()
+  resetTelefono()
 
-}
-})
-}
-
-
-
-/*
-const handleSubmit = (evt) => {
-  evt.preventDefault();
-  setCliente(cliente)
-  console.log(cliente)
-
-  axios.post(`${process.env.REACT_APP_URL_API}/clientes`,cliente ,{
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'accessToken': localStorage.getItem('accessToken')
-    },
-})
-.then( (response) => { 
-console.log(response)
-
-
-if(response.status===200){
-document.getElementById('form-insert').reset()
-  swal("Success", response.data, "success", {
+}else{
+  swal("error", response.data, "error", {
     buttons: false,
     timer: 2000,
   })
 
-resetCif();
-resetNombre();
-resetDireccion();
-resetTelefono();
 
 }
-})}
+})
+}
 
-*/
 return (
 
     <div className="contenido">
       <h1>Insertar Cliente</h1>
-    <form className='formulario' onSubmit={handleSubmit}>
+    <form className='formulario' id='form-insert' onSubmit={handleSubmit}>
       <label>
         Cif:
         <input type="text" {...bindCif} required/>
