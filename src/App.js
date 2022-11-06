@@ -2,6 +2,7 @@ import React from 'react';
 import './assets/css/App.css';
 import Nav from './components/Nav';
 import VerMedidas from './components/VerMedidas';
+import VerClientes from './components/VerClientes';
 import InsertarNormal from './components/InsertarNormal';
 import InsertarMedido from './components/InsertarMedido';
 import InsertarCliente from './components/InsertarCliente';
@@ -79,6 +80,7 @@ function App() {
           <Route path="/medidas" component={VerMedidas} />
           <Route path="/insertarnormal" component={InsertarNormal} />
           <Route path="/insertarmedido" component={InsertarMedido} />
+          <Route path="/clientes" component={VerClientes} />
           <Route path="/insertarcliente" component={InsertarCliente} />
           <Route path="/transportistas" component={Transportistas} />
           <Route path="/paquetes" component={VerPaquetes} />

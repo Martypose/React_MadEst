@@ -85,19 +85,22 @@ const  borrarMedida = async(id) =>{
       Nueva Medida
     </button>
     <div className="contenedor">
-      <div className="tabla">
-        <table>
-        <tbody>
+        <table className='tabla-datos'>
+       
+        <thead>
         <tr>
           <th>ID</th>
           <th>Ancho</th>
           <th>Grosor</th>
           <th>Largo</th>
-          <th>esMedible</th>
-          <th>barroteado</th>
-          <th>homogeneo</th>
-          <th>calidad</th>
+          <th>Medible</th>
+          <th>Barroteado</th>
+          <th>Homogeneo</th>
+          <th>Calidad</th>
+          <th>Borrar</th>
       </tr>
+      </thead>
+      <tbody>
         
         {medidas.map(medida => {
             return (<tr key={medida.id}>
@@ -121,7 +124,6 @@ const  borrarMedida = async(id) =>{
         {visible && <NameForm fetch={fetchMedidas} />}
       </div>
       </div>
-    </div>
   );
 }
 
