@@ -8,6 +8,7 @@ import InsertarMedido from './components/InsertarMedido';
 import InsertarCliente from './components/InsertarCliente';
 import Transportistas from './components/Transportistas';
 import DetallesPaquete from './components/DetallesPaquete';
+import DetallesCliente from './components/DetallesCliente';
 import Home from './components/Home'
 import { BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import VerPaquetes from './components/VerPaquetes';
@@ -86,6 +87,7 @@ function App() {
           <Route path="/paquetes" component={VerPaquetes} />
           <Route path="/pedidos" component={Pedidos} />
           <Route path='/detallespaquete' component={DetallesPaquete} />
+          <Route path='/detallescliente' component={DetallesCliente} />
         </Switch>
       </Router>
     </div>

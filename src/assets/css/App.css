@@ -42,6 +42,23 @@ header {
   position: relative;
   font-size: 14px;
 }
+.tabla-datos button {
+  background-color: #009879;
+  border: none;
+  border-radius: 0.5rem;
+  width: 100%;
+  background-color: #009879;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.tabla-datos button:hover {
+  background-color: #E26561;
+}
 
 .menu-items a {
   display: block;
@@ -244,12 +261,12 @@ a:link, a:visited, a:active {
 /* Style the submit button */
 .formulario input[type=submit] {
   width: 100%;
-  background-color: #37323E;
+  background-color: #009879;
   color: white;
   padding: 14px 20px;
   margin: 8px 0;
   border: none;
-  border-radius: 4px;
+  border-radius: 0.5rem;
   cursor: pointer;
 }
 
