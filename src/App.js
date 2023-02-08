@@ -35,6 +35,7 @@ axios.interceptors.response.use((response) => {
         }
       }).then(response => {
           console.log('pidiendo accesToken con refresh')
+          localStorage.getItem('refreshToken')
   
           console.log(response)
           if ('accessToken' in response.data) {

@@ -82,14 +82,14 @@ setCalidadElegida(calidad);
 }
 
 let medidaMostrar = (medida) =>{
-  selectorPaquetes(medida,undefined,undefined);
+  selectorPaquetes(medida,undefined,undefined)
  }
 
  let estadoMostrar = (estado) =>{
-    selectorPaquetes(undefined,estado,undefined);
+    selectorPaquetes(undefined,estado,undefined)
  }
  let calidadMostrar = (calidad) =>{
-   selectorPaquetes(undefined,undefined,calidad);
+   selectorPaquetes(undefined,undefined,calidad)
  }
 
   return (
@@ -164,7 +164,7 @@ let medidaMostrar = (medida) =>{
 >
   <button onClick={this}>Detalles</button>
 </Link></td>
-              </tr>); 
+              </tr>)
             }
             
 })}
@@ -173,7 +173,7 @@ let medidaMostrar = (medida) =>{
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 export default PreciosMadera;
