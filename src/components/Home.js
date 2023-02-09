@@ -69,7 +69,7 @@ function Home() {
               label: "Paquetes",
               data: numerosPaquetes.map((numero) => numero),
               backgroundColor: [
-                "black",
+                "rgba(75,192,192,1)",
                 "#50AF95",
                 "#f3ba2f",
                 "#2a71d0"
@@ -107,7 +107,7 @@ function Home() {
   });
 
   return (
-    <div className="App">
+    <div className="Chart">
       <BarChart chartData={chartData} />
     </div>
   );

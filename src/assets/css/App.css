@@ -157,6 +157,14 @@ nav{
 
   }
 
+  .Chart {
+
+    padding-top: 5%;
+    padding-bottom: 5%;
+    margin: auto;
+    width: 50%;
+  }
+
   nav button:hover {
     color: #000000;
   }
