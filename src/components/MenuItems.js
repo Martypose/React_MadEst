@@ -1,4 +1,4 @@
-import Dropdown from "./Dropdown";
+import Dropdown from "../utils/Dropdown";
 import { Link } from 'react-router-dom';
 import { useState, useEffect, useRef } from "react";
 

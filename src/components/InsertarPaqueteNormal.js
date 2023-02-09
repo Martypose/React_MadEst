@@ -1,7 +1,7 @@
 import React, {useState,useEffect,useRef} from 'react';
 import Select from 'react-select'
 import SelectMedidas from './FiltrosPaquetes';
-import PopupExample from './modalExample';
+import PopupCantidades from '../utils/PopupCantidades';
 import swal from 'sweetalert';
 import 'react-modern-calendar-datepicker/lib/DatePicker.css';
 import DatePicker from 'react-modern-calendar-datepicker';

@@ -1,6 +1,6 @@
 import React, {useState,useEffect,useRef} from 'react';
 import SelectMedidas from './FiltrosPaquetes';
-import PopupExample from './modalExample';
+import PopupCantidades from '../utils/PopupCantidades';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { dameCalidad,dameMedida } from '../utils/utils.js';
@@ -125,7 +125,7 @@ let medidaMostrar = (medida) =>{
                   <td>{paquete.numpiezas}</td>
                   <td>{paquete.cubico}</td>
                   <td>
-                  <PopupExample cantidades={paquete.cantidades}/>
+                  <PopupCantidades cantidades={paquete.cantidades}/>
             </td>
         <td key={dameCalidad(paquete,medidas)}>{dameCalidad(paquete,medidas)}</td>
 

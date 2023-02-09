@@ -3,8 +3,8 @@ import './assets/css/App.css';
 import Nav from './components/Nav';
 import VerMedidas from './components/VerMedidas';
 import VerClientes from './components/VerClientes';
-import InsertarNormal from './components/InsertarNormal';
-import InsertarMedido from './components/InsertarMedido';
+import InsertarPaqueteNormal from './components/InsertarPaqueteNormal';
+import InsertarPaqueteMedido from './components/InsertarPaqueteMedido';
 import InsertarCliente from './components/InsertarCliente';
 import Transportistas from './components/Transportistas';
 import DetallesPaquete from './components/DetallesPaquete';
@@ -35,9 +35,6 @@ axios.interceptors.response.use((response) => {
         }
       }).then(response => {
           console.log('pidiendo accesToken con refresh')
-          localStorage.getItem('refreshToken')
-  
-          console.log(response)
           if ('accessToken' in response.data) {
             console.log('me sirven los tokens')
             localStorage.setItem('accessToken', response.data['accessToken'].accessToken);
@@ -80,8 +77,8 @@ function App() {
         <Switch>
           <Route path='/' exact component={Home} />
           <Route path="/medidas" component={VerMedidas} />
-          <Route path="/insertarnormal" component={InsertarNormal} />
-          <Route path="/insertarmedido" component={InsertarMedido} />
+          <Route path="/insertarnormal" component={InsertarPaqueteNormal} />
+          <Route path="/insertarmedido" component={InsertarPaqueteMedido} />
           <Route path="/clientes" component={VerClientes} />
           <Route path="/insertarcliente" component={InsertarCliente} />
           <Route path="/transportistas" component={Transportistas} />
