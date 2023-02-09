@@ -67,7 +67,7 @@ export default function Signin() {
         localStorage.setItem('accessToken', response['accessToken'].accessToken);
         localStorage.setItem('refreshToken', response['refreshToken'].refreshToken);
         localStorage.setItem('username', response['username']);
-        window.location.href = "/";
+        window.location.href = "/estadisticas";
       });
     } else {
       swal("Failed", response.message, "error");
