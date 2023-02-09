@@ -30,35 +30,27 @@ function Home() {
         },
       })
       .then((response) => {
-        console.log(response.data)
+        numerosPaquetes = [0,0,0,0]
+        setNumerosPaquetes(numerosPaquetes)
         Paquetes = response.data;
         Paquetes.forEach((paquete,i) => {
           
           if (paquete.estado === "vendido"){
-            console.log(paquete, i)
             PaquetesVendidos.push(paquete)
             numerosPaquetes[1] = numerosPaquetes[1] + 1
           }
           if (paquete.estado === "stock"){
-            console.log(paquete, i)
             PaquetesStock.push(paquete)
             numerosPaquetes[2] = numerosPaquetes[2] + 1
           }
           if (paquete.estado === "bajado"){
-            console.log(paquete, i)
             PaquetesBajados.push(paquete)
             numerosPaquetes[3] = numerosPaquetes[3] + 1
           }
 
           numerosPaquetes[0] = numerosPaquetes[0] + 1
-          console.log(PaquetesBajados)
-          console.log(PaquetesStock)
-          console.log(PaquetesVendidos)
 
           setNumerosPaquetes(numerosPaquetes)
-
-
-          
         })
         
         setChartData({
@@ -76,8 +68,9 @@ function Home() {
               ],
               borderColor: "black",
               borderWidth: 3,
-              barThickness: 200,
-              minBarLength: 0,
+              hoverBackgroundColor: 'red',
+              hoverBorderColor: 'black',
+              hoverBorderWidth : '3'
             }
           ]
         })
@@ -88,20 +81,18 @@ function Home() {
   }
 
   const [chartData, setChartData] = useState({
-    labels: ["Vendidos", "Stock", "Bajados"],
+    labels: [],
     datasets: [
       {
-        label: "Paquetes",
+        label: "",
         data: numerosPaquetes.map((numero) => numero),
         backgroundColor: [
-          "rgba(75,192,192,1)",
-          "#ecf0f1",
-          "#50AF95",
-          "#f3ba2f",
-          "#2a71d0"
         ],
-        borderColor: "black",
-        borderWidth: 3
+        borderColor: "",
+        borderWidth: 3,
+        hoverBackgroundColor: 'red',
+        hoverBorderColor: 'black',
+        hoverBorderWidth : '4'
       }
     ]
   });

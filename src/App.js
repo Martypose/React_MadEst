@@ -9,7 +9,7 @@ import InsertarCliente from './components/InsertarCliente';
 import Transportistas from './components/Transportistas';
 import DetallesPaquete from './components/DetallesPaquete';
 import DetallesCliente from './components/DetallesCliente';
-import Home from './components/Home'
+import Estadisticas from './components/Estadisticas';
 import { BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import VerPaquetes from './components/VerPaquetes';
 import Pedidos from './components/Pedidos';
@@ -75,7 +75,7 @@ function App() {
       <Router>
         <Nav />
         <Switch>
-          <Route path='/' exact component={Home} />
+          <Route path='/estadisticas' exact component={Estadisticas} />
           <Route path="/medidas" component={VerMedidas} />
           <Route path="/insertarnormal" component={InsertarPaqueteNormal} />
           <Route path="/insertarmedido" component={InsertarPaqueteMedido} />

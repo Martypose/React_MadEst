@@ -27,7 +27,11 @@ export const BarChart = ({ chartData }) => {
             x: {
               ticks: { color: 'black', beginAtZero: true }
             }
-          }
+          },
+          hover: {
+            mode: 'index',
+            
+          },
         }}
       />
     </div>
