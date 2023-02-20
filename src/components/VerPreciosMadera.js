@@ -3,64 +3,83 @@ import axios from 'axios'
 
 function PreciosMadera() {
 
-    const [preciosMadera, setPreciosMadera] = useState([])
-    const [preciosMaderaMostrar, setPreciosMostrar] = useState(preciosMadera)
-    const [medidaElegida, setMedidaElegida] = useState('Todas')
-    const [clienteElegido, setClienteElegido] = useState('Todos')
+    let [preciosMadera, setPreciosMadera] = useState([])
+    let [preciosMaderaMostrar, setPreciosMostrar] = useState([])
+    let [medidaElegida, setMedidaElegida] = useState('Todas')
+    let [clienteElegido, setClienteElegido] = useState('Todos')
+    let [clientes, setClientes] = useState([])
 
 
     const montadoRef = useRef(null)
     useEffect(() => {
         montadoRef.current = true
         fetchPreciosMadera()
+        fetchClientes()
         return() => montadoRef.current = false
     },[]);
 
 const fetchPreciosMadera = async () => {
-    axios.get(`${process.env.REACT_APP_URL_API}/preciosmaderas` ,{
+  console.log('enviando peticion')
+    axios.get(`${process.env.REACT_APP_URL_API}/preciosmadera` ,{
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
           'accessToken': localStorage.getItem('accessToken')
         },}).then(response => {
-
+          console.log('hola')
           const preciosmadera = response.data
+          console.log(preciosmadera)
           if(montadoRef.current)
           setPreciosMadera(preciosmadera)
           setPreciosMostrar(preciosMadera)
         });
-  
-   
-
 };
 
-function selectorPrecios(medida=medidaElegida, cliente=clienteElegido){
-  if(montadoRef.current){
-    setVisible(false);
-    setClienteElegido(cliente);
-    let preciosMostrar;
-    if(cliente==='Todos'){
-      preciosMostrar=precios;
-    }else{
-      preciosMostrar=(preciosMadera.filter(function(precioMadera){
-        return preciosMadera.cliente===cliente;
-      }))
-    }
-    setPreciosMostrar(preciosMostrar);
-}
-}
+const fetchClientes = async () => {
+  axios.get(`${process.env.REACT_APP_URL_API}/clientes` ,{
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'accessToken': localStorage.getItem('accessToken')
+      },}).then(response => {
 
-let clienteMostrar = (cliente) =>{
-  selectorPrecioMadera(undefined,cliente);
- }
+        const clientes = response.data
+        if(montadoRef.current)
+        setClientes(clientes)
+      });
+};
+
+function handleChange(e) {
+  setClienteElegido(e.target.value);
+  console.log(e.target.value)
+  if (e.target.value === "Todos") {
+    preciosMaderaMostrar = preciosMadera;
+  } else {
+    preciosMaderaMostrar = preciosMadera.filter(function (precioMadera) {
+      return precioMadera.cliente === e;
+    });
+  }
+  setPreciosMostrar(preciosMaderaMostrar);
+}
 
   return (
       
     <div className="contenido">
+
+
+
       <h1>Precios Madera</h1>
     <div className="contenedor">
       <div  className='fixed_header'>
-  <h2>Mostrando precios del cliente {clienteElegido} para medida: {medidaElegida} </h2>
+  <h2>Mostrando precios del cliente {clienteElegido}</h2>
+  <select name="clientes" id="selectclientes" onChange={handleChange}>
+              <option key='Default' value="Todos">Todos</option>
+          {clientes.map(cliente => {
+            return (
+            <option key={cliente.cif} value={cliente.nombre}>{cliente.nombre}</option>
+            ); 
+})}
+          </select>
         <table className='tabla-datos'>
           <thead>
           <tr>
@@ -71,9 +90,10 @@ let clienteMostrar = (cliente) =>{
           </thead>
         <tbody>
         {preciosMaderaMostrar.map(precioMadera => {
-                return (<tr key={precioMadera.cliente}>
+                return (<tr key={precioMadera.cliente +""+precioMadera.medida}>
+                    <td>{precioMadera.cliente}</td>
                     <td>{precioMadera.medida}</td>
-                  <td>{precioMadera.precio}</td>
+                  <td>{precioMadera.precio} €/m3</td>
               </tr>); 
             }
             )}

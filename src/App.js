@@ -10,6 +10,7 @@ import Transportistas from './components/Transportistas';
 import DetallesPaquete from './components/DetallesPaquete';
 import DetallesCliente from './components/DetallesCliente';
 import Estadisticas from './components/Estadisticas';
+import VerPreciosMadera from './components/VerPreciosMadera';
 import { BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import VerPaquetes from './components/VerPaquetes';
 import Pedidos from './components/Pedidos';
@@ -86,6 +87,7 @@ function App() {
           <Route path="/pedidos" component={Pedidos} />
           <Route path='/detallespaquete' component={DetallesPaquete} />
           <Route path='/detallescliente' component={DetallesCliente} />
+          <Route path='/preciosmadera' component={VerPreciosMadera} />
         </Switch>
       </Router>
     </div>
