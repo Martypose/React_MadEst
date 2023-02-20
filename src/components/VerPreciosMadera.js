@@ -1,11 +1,11 @@
 import React, {useState,useEffect,useRef} from 'react'
 import axios from 'axios'
+import { dameCliente } from "../utils/utils.js";
 
 function PreciosMadera() {
 
     let [preciosMadera, setPreciosMadera] = useState([])
     let [preciosMaderaMostrar, setPreciosMostrar] = useState([])
-    let [medidaElegida, setMedidaElegida] = useState('Todas')
     let [clienteElegido, setClienteElegido] = useState('Todos')
     let [clientes, setClientes] = useState([])
 
@@ -31,7 +31,7 @@ const fetchPreciosMadera = async () => {
           console.log(preciosmadera)
           if(montadoRef.current)
           setPreciosMadera(preciosmadera)
-          setPreciosMostrar(preciosMadera)
+          setPreciosMostrar(preciosmadera)
         });
 };
 
@@ -56,7 +56,7 @@ function handleChange(e) {
     preciosMaderaMostrar = preciosMadera;
   } else {
     preciosMaderaMostrar = preciosMadera.filter(function (precioMadera) {
-      return precioMadera.cliente === e;
+      return dameCliente(precioMadera.cliente,clientes).nombre=== e.target.value;
     });
   }
   setPreciosMostrar(preciosMaderaMostrar);
@@ -90,11 +90,14 @@ function handleChange(e) {
           </thead>
         <tbody>
         {preciosMaderaMostrar.map(precioMadera => {
-                return (<tr key={precioMadera.cliente +""+precioMadera.medida}>
-                    <td>{precioMadera.cliente}</td>
-                    <td>{precioMadera.medida}</td>
-                  <td>{precioMadera.precio} €/m3</td>
-              </tr>); 
+                return (
+              <tr key={precioMadera.cliente +""+precioMadera.medida}>
+                <td>{dameCliente(precioMadera.cliente,clientes).nombre}</td>
+                <td>{precioMadera.medida}</td>
+                <td>{precioMadera.precio} €/m3</td>
+              </tr>
+              
+              ); 
             }
             )}
           </tbody>

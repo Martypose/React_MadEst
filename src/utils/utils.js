@@ -24,3 +24,21 @@ export function dameMedida(paquete, medidas){
     return medidaFinal
 
 }
+
+export function dameCliente(cif, clientes){
+
+    let clienteFinal = {
+        cif : "000",
+        nombre: "null",
+        direccion: "null",
+        telefono: "000"
+    }
+
+
+    clientes.filter(cliente => cliente.cif===cif).map(cliente => (
+    clienteFinal = cliente
+    ))
+
+    return clienteFinal
+
+}
