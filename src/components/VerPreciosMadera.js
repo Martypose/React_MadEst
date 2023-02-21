@@ -1,6 +1,8 @@
 import React, {useState,useEffect,useRef} from 'react'
 import axios from 'axios'
-import { dameCliente } from "../utils/utils.js";
+import { dameCliente } from "../utils/utils.js"
+import { Link } from 'react-router-dom'
+
 
 function PreciosMadera() {
 
@@ -16,7 +18,7 @@ function PreciosMadera() {
         fetchPreciosMadera()
         fetchClientes()
         return() => montadoRef.current = false
-    },[]);
+    },[])
 
 const fetchPreciosMadera = async () => {
   console.log('enviando peticion')
@@ -26,7 +28,6 @@ const fetchPreciosMadera = async () => {
           'Content-Type': 'application/json',
           'accessToken': localStorage.getItem('accessToken')
         },}).then(response => {
-          console.log('hola')
           const preciosmadera = response.data
           console.log(preciosmadera)
           if(montadoRef.current)
@@ -50,16 +51,16 @@ const fetchClientes = async () => {
 };
 
 function handleChange(e) {
-  setClienteElegido(e.target.value);
+  setClienteElegido(e.target.value)
   console.log(e.target.value)
   if (e.target.value === "Todos") {
-    preciosMaderaMostrar = preciosMadera;
+    preciosMaderaMostrar = preciosMadera
   } else {
     preciosMaderaMostrar = preciosMadera.filter(function (precioMadera) {
-      return dameCliente(precioMadera.cliente,clientes).nombre=== e.target.value;
-    });
+      return dameCliente(precioMadera.cliente,clientes).nombre=== e.target.value
+    })
   }
-  setPreciosMostrar(preciosMaderaMostrar);
+  setPreciosMostrar(preciosMaderaMostrar)
 }
 
   return (
@@ -77,7 +78,7 @@ function handleChange(e) {
           {clientes.map(cliente => {
             return (
             <option key={cliente.cif} value={cliente.nombre}>{cliente.nombre}</option>
-            ); 
+            )
 })}
           </select>
         <table className='tabla-datos'>
@@ -86,6 +87,7 @@ function handleChange(e) {
           <th>Cliente</th>
           <th>Medida</th>
           <th>Precio</th>
+          <th>Detalles</th>
       </tr>
           </thead>
         <tbody>
@@ -95,9 +97,19 @@ function handleChange(e) {
                 <td>{dameCliente(precioMadera.cliente,clientes).nombre}</td>
                 <td>{precioMadera.medida}</td>
                 <td>{precioMadera.precio} €/m3</td>
+                <td><Link
+  to={{
+    pathname: "/detallespreciomadera",
+    state: {
+    precioMadera
+    },
+  }}
+>
+  <button onClick={this}>Detalles</button>
+</Link></td>
               </tr>
               
-              ); 
+              )
             }
             )}
           </tbody>
@@ -105,7 +117,7 @@ function handleChange(e) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 export default PreciosMadera

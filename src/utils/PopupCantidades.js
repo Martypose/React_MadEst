@@ -37,4 +37,4 @@ function PopupCantidades(paquete) {
   );
 }
 
-export default PopupCantidades;
+export default PopupCantidades

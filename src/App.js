@@ -9,6 +9,7 @@ import InsertarCliente from './components/InsertarCliente';
 import Transportistas from './components/Transportistas';
 import DetallesPaquete from './components/DetallesPaquete';
 import DetallesCliente from './components/DetallesCliente';
+import DetallesPrecioMadera from './components/DetallesPrecioMadera';
 import Estadisticas from './components/Estadisticas';
 import VerPreciosMadera from './components/VerPreciosMadera';
 import { BrowserRouter as Router, Switch, Route} from 'react-router-dom';
@@ -87,6 +88,7 @@ function App() {
           <Route path="/pedidos" component={Pedidos} />
           <Route path='/detallespaquete' component={DetallesPaquete} />
           <Route path='/detallescliente' component={DetallesCliente} />
+          <Route path='/detallespreciomadera' component={DetallesPrecioMadera} />
           <Route path='/preciosmadera' component={VerPreciosMadera} />
         </Switch>
       </Router>
