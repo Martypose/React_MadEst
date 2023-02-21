@@ -18,7 +18,7 @@ function DetallesPrecioMadera(props) {
     precioMaderaCambios = {
       medida: precioMadera.medida,
       cliente: precioMadera.cliente,
-      precio: precioMadera.precio,
+      precio: precio,
   };
     const montadoRef = useRef(null);
     useEffect(() => {

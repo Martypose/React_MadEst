@@ -108,14 +108,14 @@ function DetallesCliente(props) {
 <table className='tabla-datos'>
 <thead>
           <tr>
-          <th><h1>DETALLES DEL Cliente</h1></th>
+          <th><h1>Detalles del Cliente</h1></th>
           </tr>
 
 
           </thead>
         <tbody>      
         <tr>
-          <td>Cif</td>
+          <td>CIF</td>
           <th>{cliente.cif}</th>
           </tr>
           
