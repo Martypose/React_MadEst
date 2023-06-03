@@ -34,7 +34,7 @@ const MenuItems = ({ items }) => {
      <Dropdown dropdown={dropdown} submenus={items.submenu} />
     </>
    ) : (
-            <Link to={`/${items.title}`}>
+            <Link to={`/${items.url}`}>
         <li key={items.title}>{items.title}</li>
     </Link>
    )}

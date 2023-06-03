@@ -4,6 +4,11 @@ export const menuItems = [
       url: "estadisticas",
       
      },
+
+     {
+      title: "Análisis producción",
+      url: "analisisproduccion",
+     },
      {
      title: "Paquetes",
      submenu: [

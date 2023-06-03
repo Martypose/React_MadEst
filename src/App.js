@@ -9,6 +9,7 @@ import InsertarCliente from './components/InsertarCliente';
 import Transportistas from './components/Transportistas';
 import DetallesPaquete from './components/DetallesPaquete';
 import DetallesCliente from './components/DetallesCliente';
+import AnalisisProduccion from './components/AnalisisProduccion';
 import DetallesPrecioMadera from './components/DetallesPrecioMadera';
 import Estadisticas from './components/Estadisticas';
 import VerPreciosMadera from './components/VerPreciosMadera';
@@ -17,11 +18,13 @@ import VerPaquetes from './components/VerPaquetes';
 import Pedidos from './components/Pedidos';
 import Login from './components/Login';
 import axios from 'axios';
+axios.defaults.baseURL = process.env.REACT_APP_URL_API;
 
 axios.interceptors.response.use((response) => {
   return response;
   }, (error) => {
       console.log('Error en llamada, comprobando cual es...')
+      console.log(error.response)
       const originalRequest = error.config;
       if(error.response.status===301 && !originalRequest._retry){
         originalRequest._retry = true;
@@ -90,6 +93,7 @@ function App() {
           <Route path='/detallescliente' component={DetallesCliente} />
           <Route path='/detallespreciomadera' component={DetallesPrecioMadera} />
           <Route path='/preciosmadera' component={VerPreciosMadera} />
+          <Route path='/analisisproduccion' component={AnalisisProduccion} />
         </Switch>
       </Router>
     </div>

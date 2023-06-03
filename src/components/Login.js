@@ -39,26 +39,48 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 async function loginUser(credentials) {
-  return axios.post(`${process.env.REACT_APP_URL_API}/login`,credentials ,{
+
+
+
+  // Enviar datos a la API, pidiendo un token de acceso
+
+  console.log('credenciales: '+credentials.name + ' ' + credentials.password)
+  
+  return axios.post(`${process.env.REACT_APP_URL_API}/login`, {
+    name: credentials.name,
+    password: credentials.password
+  }, {
     headers: {
       'Content-Type': 'application/json'
-    }
-  })
-    .then(response => response.data)
+    },
+    withCredentials: true,
+  }).then(response => response.data)
+    .catch(error => {
+      console.log(error)
+      return error.response.data
+    })
  }
 
 export default function Signin() {
   const classes = useStyles();
   const [name, setname] = useState();
   const [password, setPassword] = useState();
+  
+
 
   const handleSubmit = async e => {
+
+    console.log(name, password)
+    console.log('enviando datos')
     e.preventDefault();
     const response = await loginUser({
-      name,
-      password
+      name: name,
+      password: password
     });
-    if ('accessToken' in response) {
+    
+
+
+    if (response && 'accessToken' in response) {
       swal("Success", response.message, "success", {
         buttons: false,
         timer: 2000,
@@ -70,7 +92,9 @@ export default function Signin() {
         window.location.href = "/estadisticas";
       });
     } else {
-      swal("Failed", response.message, "error");
+      swal("Failed", response ? response.error : 'Network Error', "error");
+      console.log(response)
+
     }
   }
 
