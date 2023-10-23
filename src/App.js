@@ -1,21 +1,9 @@
 import React from 'react';
 import './assets/css/App.css';
 import Nav from './components/Nav';
-import VerMedidas from './components/VerMedidas';
-import VerClientes from './components/VerClientes';
-import InsertarPaqueteNormal from './components/InsertarPaqueteNormal';
-import InsertarPaqueteMedido from './components/InsertarPaqueteMedido';
-import InsertarCliente from './components/InsertarCliente';
-import Transportistas from './components/Transportistas';
-import DetallesPaquete from './components/DetallesPaquete';
-import DetallesCliente from './components/DetallesCliente';
 import AnalisisProduccion from './components/AnalisisProduccion';
-import DetallesPrecioMadera from './components/DetallesPrecioMadera';
 import Estadisticas from './components/Estadisticas';
-import VerPreciosMadera from './components/VerPreciosMadera';
 import { BrowserRouter as Router, Switch, Route} from 'react-router-dom';
-import VerPaquetes from './components/VerPaquetes';
-import Pedidos from './components/Pedidos';
 import Login from './components/Login';
 import axios from 'axios';
 axios.defaults.baseURL = process.env.REACT_APP_URL_API;
@@ -81,18 +69,6 @@ function App() {
         <Nav />
         <Switch>
           <Route path='/estadisticas' exact component={Estadisticas} />
-          <Route path="/medidas" component={VerMedidas} />
-          <Route path="/insertarnormal" component={InsertarPaqueteNormal} />
-          <Route path="/insertarmedido" component={InsertarPaqueteMedido} />
-          <Route path="/clientes" component={VerClientes} />
-          <Route path="/insertarcliente" component={InsertarCliente} />
-          <Route path="/transportistas" component={Transportistas} />
-          <Route path="/paquetes" component={VerPaquetes} />
-          <Route path="/pedidos" component={Pedidos} />
-          <Route path='/detallespaquete' component={DetallesPaquete} />
-          <Route path='/detallescliente' component={DetallesCliente} />
-          <Route path='/detallespreciomadera' component={DetallesPrecioMadera} />
-          <Route path='/preciosmadera' component={VerPreciosMadera} />
           <Route path='/analisisproduccion' component={AnalisisProduccion} />
         </Switch>
       </Router>
