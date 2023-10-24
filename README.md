@@ -33,3 +33,11 @@ Para instalar las dependencias del proyecto, ejecute:
 
 ```bash
 npm install
+```
+
+Para iniciar la app, ejecute:
+
+```bash
+npm start
+```
+
