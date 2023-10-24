@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Bar } from 'react-chartjs-2';
 import { obtenerTablasDetectadas } from '../services/tablasDetectadasService';
+import { Chart, registerables } from 'chart.js';
+Chart.register(...registerables);
 
 
 function TablasDetectadasChart() {
@@ -83,6 +85,7 @@ function TablasDetectadasChart() {
                     },
                     scales: {
                         y: {
+                            type: 'linear',
                             beginAtZero: true,
                         },
                     },
