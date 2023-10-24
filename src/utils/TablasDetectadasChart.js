@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Bar } from 'react-chartjs-2';
+import { obtenerTablasDetectadas } from '../services/tablasDetectadasService';
+
 
 function TablasDetectadasChart() {
     const [chartData, setChartData] = useState({
@@ -17,15 +19,7 @@ function TablasDetectadasChart() {
     });
 
     useEffect(() => {
-        axios
-            .get(`${process.env.REACT_APP_URL_API}/tablasdetectadas`, {
-                headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json",
-                    accessToken: localStorage.getItem("accessToken"),
-                },
-            })
-            .then(response => {
+        obtenerTablasDetectadas().then(response => {
                 const data = response.data;
                 console.log(data);
 
