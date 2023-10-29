@@ -1,19 +1,19 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 const useDateForm = () => {
-    const today = new Date();
-    const lastMonth = new Date(today);
-    lastMonth.setMonth(today.getMonth() - 1);
+  const today = new Date();
+  const lastMonth = new Date(today);
+  lastMonth.setMonth(today.getMonth() - 1);
 
-    const [startDate, setStartDate] = useState(lastMonth);
-    const [endDate, setEndDate] = useState(today);
+  const [startDate, setStartDate] = useState(lastMonth);
+  const [endDate, setEndDate] = useState(today);
 
-    return {
-        startDate,
-        endDate,
-        setStartDate,
-        setEndDate
-    };
+  return {
+    startDate,
+    endDate,
+    setStartDate,
+    setEndDate,
+  };
 };
 
 export default useDateForm;

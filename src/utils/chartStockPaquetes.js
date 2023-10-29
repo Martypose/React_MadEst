@@ -1,4 +1,4 @@
-import { Bar } from "react-chartjs-2"
+import { Bar } from "react-chartjs-2";
 
 export const BarChart = ({ chartData }) => {
   return (
@@ -15,25 +15,24 @@ export const BarChart = ({ chartData }) => {
             legend: {
               display: false,
               labels: {
-                color: 'red',
-                backgroundColor: 'black'
-              }
-            }
+                color: "red",
+                backgroundColor: "black",
+              },
+            },
           },
           scales: {
             y: {
-              ticks: { color: 'black', beginAtZero: true }
+              ticks: { color: "black", beginAtZero: true },
             },
             x: {
-              ticks: { color: 'black', beginAtZero: true }
-            }
+              ticks: { color: "black", beginAtZero: true },
+            },
           },
           hover: {
-            mode: 'index',
-            
+            mode: "index",
           },
         }}
       />
     </div>
-  )
-}
+  );
+};
