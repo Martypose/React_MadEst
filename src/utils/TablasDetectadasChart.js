@@ -22,16 +22,42 @@ function TablasDetectadasChart({ data }) {
             data: volumes,
             backgroundColor: "rgba(75,192,192,0.6)",
             borderColor: "rgba(75,192,192,1)",
-            borderWidth: 1,
+            borderWidth: 2,
           },
         ],
       });
     }
   }, [data]);
 
+  const options = {
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: function (context) {
+            let label = context.dataset.label || "";
+
+            if (label) {
+              label += ": ";
+            }
+            label += `${context.parsed.y} m³`;
+            return label;
+          },
+        },
+      },
+    },
+    scales: {
+      y: {
+        title: {
+          display: true,
+          text: "Volumen (m³)",
+        },
+      },
+    },
+  };
+
   return (
     <div className="chart-container">
-      {chartData && <Bar data={chartData} />}
+      {chartData && <Bar data={chartData} options={options} />}
     </div>
   );
 }
