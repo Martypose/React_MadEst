@@ -39,12 +39,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 async function loginUser(credentials) {
-
-
-
-  // Enviar datos a la API, pidiendo un token de acceso
-
-  console.log('credenciales: '+credentials.name + ' ' + credentials.password)
   
   return axios.post(`${process.env.REACT_APP_URL_API}/login`, {
     name: credentials.name,
@@ -56,7 +50,6 @@ async function loginUser(credentials) {
     withCredentials: true,
   }).then(response => response.data)
     .catch(error => {
-      console.log(error)
       return error.response.data
     })
  }
@@ -69,9 +62,6 @@ export default function Signin() {
 
 
   const handleSubmit = async e => {
-
-    console.log(name, password)
-    console.log('enviando datos')
     e.preventDefault();
     const response = await loginUser({
       name: name,
@@ -93,7 +83,6 @@ export default function Signin() {
       });
     } else {
       swal("Failed", response ? response.error : 'Network Error', "error");
-      console.log(response)
 
     }
   }
