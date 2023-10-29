@@ -1,8 +1,12 @@
 import { useState } from 'react';
 
 const useDateForm = () => {
-    const [startDate, setStartDate] = useState(new Date());
-    const [endDate, setEndDate] = useState(new Date());
+    const today = new Date();
+    const lastMonth = new Date(today);
+    lastMonth.setMonth(today.getMonth() - 1);
+
+    const [startDate, setStartDate] = useState(lastMonth);
+    const [endDate, setEndDate] = useState(today);
 
     return {
         startDate,
@@ -10,6 +14,6 @@ const useDateForm = () => {
         setStartDate,
         setEndDate
     };
-}
+};
 
 export default useDateForm;

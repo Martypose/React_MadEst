@@ -15,3 +15,25 @@ export const obtenerTablasDetectadas = async () => {
     throw error;
   }
 };
+
+
+export const obtenerCubicoFiltrado = async (startDate, endDate, agrupamiento) => {
+  const token = localStorage.getItem("accessToken");
+  try {
+    const response = await axios.get(`${process.env.REACT_APP_URL_API}/tablasdetectadas/cubico-por-fecha`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'accessToken': token,
+      },
+      params: {
+        startDate,
+        endDate,
+        agrupamiento
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener tablas filtradas', error);
+    throw error;
+  }
+};

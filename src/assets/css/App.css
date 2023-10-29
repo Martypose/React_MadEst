@@ -298,3 +298,66 @@ form label {
   font-weight:bold;
   font-size: 30px;
 }
+
+.analisis-produccion-container {
+  text-align: center;
+  margin: 2rem auto;
+}
+
+.analisis-produccion-container h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.form {
+  margin: 20px auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  background-color: #f2f2f2;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+input, select, button {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+button {
+  background-color: #009879;
+  color: white;
+  cursor: pointer;
+  border: none;
+}
+
+button:hover {
+  background-color: #E26561;
+}
+
+/* Estilo para el contenedor del gráfico */
+.chart-container {
+  margin-top: 2rem;
+  margin-left: 10%;  /* Margen izquierdo */
+  margin-right: 10%; /* Margen derecho */
+}
+
+.select-agrupamiento {
+  width: 30%; /* O el tamaño que consideres apropiado */
+}
+
+.formulario-filtrado {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centra los elementos a lo largo del eje principal */
+}
+
+.fechas-container {
+  display: flex; /* Los hace estar uno al lado del otro */
+  gap: 10px; /* Añade un pequeño espacio entre los dos */
+}
