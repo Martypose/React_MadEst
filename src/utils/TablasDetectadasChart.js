@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Bar } from "react-chartjs-2";
-import { obtenerCubicoFiltrado } from "../services/tablasDetectadasService"; // Asume que esta función obtiene los datos que necesitas
 import { Chart, registerables } from "chart.js";
 Chart.register(...registerables);
 

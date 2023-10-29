@@ -9,15 +9,27 @@ function AnalisisProduccion() {
   const [chartData, setChartData] = useState(null);
 
   const fetchFilteredData = async () => {
-    try {
-      const data = await obtenerCubicoFiltrado(
-        startDate,
-        endDate,
-        agrupamiento
+    // Comprobar si ambas fechas están establecidas y son instancias válidas de Date
+    if (
+      startDate instanceof Date &&
+      !isNaN(startDate) &&
+      endDate instanceof Date &&
+      !isNaN(endDate)
+    ) {
+      try {
+        const data = await obtenerCubicoFiltrado(
+          startDate,
+          endDate,
+          agrupamiento
+        );
+        setChartData(data);
+      } catch (error) {
+        console.error("Error al obtener los datos:", error);
+      }
+    } else {
+      console.log(
+        "Ambas fechas deben estar seleccionadas y ser válidas para filtrar los datos"
       );
-      setChartData(data);
-    } catch (error) {
-      console.error("Error al obtener los datos:", error);
     }
   };
 
@@ -61,9 +73,6 @@ function AnalisisProduccion() {
           <option value="semana">Semana</option>
           <option value="mes">Mes</option>
         </select>
-        <button type="button" onClick={fetchFilteredData}>
-          Filtrar
-        </button>
       </form>
 
       <TablasDetectadasChart data={chartData} />

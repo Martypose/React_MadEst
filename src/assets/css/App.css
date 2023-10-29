@@ -361,3 +361,27 @@ button:hover {
   display: flex; /* Los hace estar uno al lado del otro */
   gap: 10px; /* Añade un pequeño espacio entre los dos */
 }
+
+.estadisticas-container {
+  margin: 25px 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background-color: #009879;
+  color: white;
+}
+
+th, td {
+  padding: 15px;
+  text-align: left;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
