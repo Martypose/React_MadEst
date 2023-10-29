@@ -5,6 +5,9 @@ import { obtenerEstadisticas } from "../services/estadisticasDetectadasService";
 function Estadisticas() {
   const { startDate, endDate, setStartDate, setEndDate } = useDateForm();
   const [estadisticas, setEstadisticas] = useState(null);
+  const [totalRegistros, setTotalRegistros] = useState(0);
+  const [paginaActual, setPaginaActual] = useState(1);
+  const registrosPorPagina = 5;
 
   const fetchEstadisticas = async () => {
     if (
@@ -17,10 +20,11 @@ function Estadisticas() {
         const data = await obtenerEstadisticas(
           startDate.toISOString(),
           endDate.toISOString(),
-          10,
-          0
+          registrosPorPagina,
+          (paginaActual - 1) * registrosPorPagina
         );
-        setEstadisticas(data);
+        setEstadisticas(data.data);
+        setTotalRegistros(data.total);
       } catch (error) {
         console.error("Error al obtener las estadísticas:", error);
       }
@@ -29,7 +33,7 @@ function Estadisticas() {
 
   useEffect(() => {
     fetchEstadisticas();
-  }, [startDate, endDate]);
+  }, [startDate, endDate, paginaActual]);
 
   function formatDate(date) {
     const d = new Date(date),
@@ -39,9 +43,10 @@ function Estadisticas() {
 
     return [year, month.padStart(2, "0"), day.padStart(2, "0")].join("-");
   }
+  const totalPages = Math.ceil(totalRegistros / registrosPorPagina);
 
   return (
-    <div>
+    <div className="analisis-produccion-container">
       <h1>Estadísticas de la Raspberry Pi</h1>
       <form className="formulario-filtrado">
         <input
@@ -82,6 +87,19 @@ function Estadisticas() {
       ) : (
         "Cargando..."
       )}
+      <button
+        onClick={() => setPaginaActual(paginaActual + 1)}
+        disabled={paginaActual >= totalPages} // Deshabilitar si es la última página
+      >
+        Siguiente
+      </button>
+      <span>{`${paginaActual}/${totalPages}`}</span>
+      <button
+        onClick={() => setPaginaActual(paginaActual - 1)}
+        disabled={paginaActual <= 1} // Deshabilitar si es la primera página
+      >
+        Anterior
+      </button>
     </div>
   );
 }
