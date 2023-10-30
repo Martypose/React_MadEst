@@ -8,6 +8,7 @@ function TablasDetectadasChart({ data }) {
 
   useEffect(() => {
     if (data) {
+      console.log(data);
       // Extrae las fechas y los volúmenes cúbicos de los datos
       const labels = data.map((item) => item.fecha);
       const volumes = data.map((item) => item.volumen_cubico);

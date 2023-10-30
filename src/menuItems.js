@@ -1,12 +1,15 @@
 export const menuItems = [
-   {
-      title: "Estadisticas",
-      url: "estadisticas",
-      
-     },
+  {
+    title: "Estadisticas",
+    url: "estadisticas",
+  },
 
-     {
-      title: "Análisis producción",
-      url: "analisisproduccion",
-     },
-   ]
+  {
+    title: "Cubico",
+    url: "cubico",
+  },
+  {
+    title: "TablasxNumero",
+    url: "tablasnumero",
+  },
+];

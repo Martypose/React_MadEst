@@ -2,6 +2,7 @@ import React from "react";
 import "./assets/css/App.css";
 import Nav from "./components/Nav";
 import AnalisisProduccion from "./components/AnalisisProduccion";
+import TablasNumeros from "./components/TablasNumeros";
 import Estadisticas from "./components/Estadisticas";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Login from "./components/Login";
@@ -78,7 +79,8 @@ function App() {
         <Nav />
         <Switch>
           <Route path="/estadisticas" exact component={Estadisticas} />
-          <Route path="/analisisproduccion" component={AnalisisProduccion} />
+          <Route path="/cubico" component={AnalisisProduccion} />
+          <Route path="/tablasnumero" component={TablasNumeros} />
         </Switch>
       </Router>
     </div>
