@@ -6,6 +6,14 @@ Chart.register(...registerables);
 function TablasNumerosChart({ data }) {
   const [chartData, setChartData] = useState(null);
 
+  // Función para generar un color aleatorio en formato RGBA
+  const generateRandomColor = () => {
+    const red = Math.floor(Math.random() * 256);
+    const green = Math.floor(Math.random() * 256);
+    const blue = Math.floor(Math.random() * 256);
+    return `rgba(${red}, ${green}, ${blue}, 0.6)`;
+  };
+
   useEffect(() => {
     if (data) {
       console.log(data);
@@ -30,10 +38,8 @@ function TablasNumerosChart({ data }) {
         const ancho = firstItem.ancho;
         const altura = firstItem.altura;
         const label = `${ancho}cm x ${altura}cm`;
+        const color = generateRandomColor();
 
-        const color = `rgba(${index * 20}, ${(index + 1) * 40}, ${
-          (index + 2) * 60
-        }, 0.6)`;
         datasets.push({
           label: label,
           data: dataByMeasure[measureId].map((item) => item.num_tablas),
