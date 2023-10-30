@@ -68,6 +68,7 @@ function TablasNumeros() {
           value={agrupamiento}
           onChange={(e) => setAgrupamiento(e.target.value)}
         >
+          <option value="minuto">Minuto</option>
           <option value="hora">Hora</option>
           <option value="dia">Día</option>
           <option value="semana">Semana</option>
