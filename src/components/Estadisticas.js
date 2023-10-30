@@ -7,7 +7,7 @@ function Estadisticas() {
   const [estadisticas, setEstadisticas] = useState(null);
   const [totalRegistros, setTotalRegistros] = useState(0);
   const [paginaActual, setPaginaActual] = useState(1);
-  const registrosPorPagina = 5;
+  const registrosPorPagina = 15;
 
   const fetchEstadisticas = async () => {
     if (
