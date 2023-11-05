@@ -1,10 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Line } from "react-chartjs-2";
 import { Chart, registerables } from "chart.js";
+import { DetalleMedidasTabla } from "../utils/detalleMedidasTabla";
+
 Chart.register(...registerables);
 
 function TablasNumerosChart({ data }) {
   const [chartData, setChartData] = useState(null);
+  const [hoveredData, setHoveredData] = useState(null);
+  const lastHoveredDataRef = useRef(null);
+  const [isHovering, setIsHovering] = useState(false);
+  const chartRef = useRef(null);
 
   // Función para generar un color aleatorio en formato RGBA
   const generateRandomColor = () => {
@@ -15,7 +21,7 @@ function TablasNumerosChart({ data }) {
   };
 
   useEffect(() => {
-    if (data) {
+    if (data && data.length > 0) {
       console.log(data);
       const labels = [];
       const datasets = [];
@@ -67,6 +73,35 @@ function TablasNumerosChart({ data }) {
             return label;
           },
         },
+        enabled: false, // Deshabilita el tooltip por defecto
+        external: function (context) {
+          const tooltip = context.tooltip;
+          if (tooltip.dataPoints.length > 0) {
+            setIsHovering(true);
+            const label = tooltip.dataPoints[0].label;
+            const newHoveredData = {
+              label: label,
+              data: data.filter((item) => item.fecha === label),
+            };
+
+            if (
+              JSON.stringify(lastHoveredDataRef.current) !==
+              JSON.stringify(newHoveredData)
+            ) {
+              setHoveredData(newHoveredData);
+              console.log("entro hover");
+              lastHoveredDataRef.current = newHoveredData;
+            }
+          } else {
+            // Aquí es donde detectamos que no hay hover y ocultamos la tabla
+            if (lastHoveredDataRef.current) {
+              setIsHovering(false);
+              setHoveredData(null);
+              lastHoveredDataRef.current = null;
+              console.log("salgo");
+            }
+          }
+        },
       },
       legend: {
         labels: {
@@ -88,7 +123,12 @@ function TablasNumerosChart({ data }) {
 
   return (
     <div className="chart-container">
-      {chartData && <Line data={chartData} options={options} />}
+      {chartData && chartData.labels && chartData.labels.length > 0 && (
+        <Line data={chartData} options={options} />
+      )}
+      {isHovering && hoveredData && (
+        <DetalleMedidasTabla data={hoveredData.data} />
+      )}
     </div>
   );
 }

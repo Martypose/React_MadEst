@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import TablasNumerosChart from "../utils/TablasNumerosChart";
 import useDateForm from "../hooks/useDateForm";
 import { obtenerTablasPorMedidaYFecha } from "../services/tablasDetectadasService";
+import { DetalleMedidasTabla } from "../utils/detalleMedidasTabla";
 
 function TablasNumeros() {
   const { startDate, endDate, setStartDate, setEndDate } = useDateForm();
   const [agrupamiento, setAgrupamiento] = useState("dia");
-  const [chartData, setChartData] = useState(null);
+  const [chartData, setChartData] = useState([]);
 
   const fetchFilteredData = async () => {
     // Comprobar si ambas fechas están establecidas y son instancias válidas de Date
