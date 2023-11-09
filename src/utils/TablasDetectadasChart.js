@@ -30,6 +30,8 @@ function TablasDetectadasChart({ data }) {
   }, [data]);
 
   const options = {
+    maintainAspectRatio: false, // Ajusta a false para que el gráfico se adapte al contenedor
+    responsive: true, // Asegura que el gráfico sea responsivo
     plugins: {
       tooltip: {
         callbacks: {
@@ -56,7 +58,7 @@ function TablasDetectadasChart({ data }) {
   };
 
   return (
-    <div className="chart-container">
+    <div className="chart-container" style={{ height: "50vh" }}>
       {chartData && <Bar data={chartData} options={options} />}
     </div>
   );
