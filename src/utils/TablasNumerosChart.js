@@ -62,6 +62,7 @@ function TablasNumerosChart({ data }) {
 
   const options = {
     maintainAspectRatio: false,
+    aspectRatio: 2,
     responsive: true,
     plugins: {
       tooltip: {
@@ -125,7 +126,7 @@ function TablasNumerosChart({ data }) {
   };
 
   return (
-    <div className="chart-container" style={{ height: "50vh" }}>
+    <div className="chart-container" style={{ height: "100vh" }}>
       {chartData && chartData.labels && chartData.labels.length > 0 && (
         <Line data={chartData} options={options} />
       )}
