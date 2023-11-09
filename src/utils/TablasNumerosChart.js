@@ -52,6 +52,7 @@ function TablasNumerosChart({ data }) {
           borderColor: color,
           borderWidth: 2,
           fill: false,
+          hidden: true,
         });
       });
 
@@ -60,6 +61,8 @@ function TablasNumerosChart({ data }) {
   }, [data]);
 
   const options = {
+    maintainAspectRatio: false,
+    responsive: true,
     plugins: {
       tooltip: {
         callbacks: {
@@ -122,7 +125,7 @@ function TablasNumerosChart({ data }) {
   };
 
   return (
-    <div className="chart-container">
+    <div className="chart-container" style={{ height: "50vh" }}>
       {chartData && chartData.labels && chartData.labels.length > 0 && (
         <Line data={chartData} options={options} />
       )}
