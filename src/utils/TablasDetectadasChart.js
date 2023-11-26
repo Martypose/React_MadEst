@@ -58,7 +58,7 @@ function TablasDetectadasChart({ data }) {
   };
 
   return (
-    <div className="chart-container" style={{ height: "50vh" }}>
+    <div className="chart-container" style={{ height: "80vh" }}>
       {chartData && <Bar data={chartData} options={options} />}
     </div>
   );
