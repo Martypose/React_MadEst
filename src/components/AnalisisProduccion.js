@@ -125,8 +125,18 @@ function AnalisisProduccion() {
 
   const setCurrentWeek = () => {
     const now = new Date();
-    const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay() + 1));
-    const endOfWeek = new Date(now.setDate(startOfWeek.getDate() + 6));
+    const dayOfWeek = now.getDay(); // 0 (Sun) to 6 (Sat)
+    const startOfWeek = new Date(now);
+    const endOfWeek = new Date(now);
+
+    // Adjust to Monday (1)
+    if (dayOfWeek === 0) {
+      startOfWeek.setDate(now.getDate() - 6);
+    } else {
+      startOfWeek.setDate(now.getDate() - dayOfWeek);
+    }
+
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
     setStartDate(startOfWeek);
     setEndDate(endOfWeek);
     setAgrupamiento("dia");
