@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import TablasDetectadasChart from "../utils/TablasDetectadasChart";
 import useDateForm from "../hooks/useDateForm";
 import { obtenerCubicoFiltrado } from "../services/tablasDetectadasService";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 
 function AnalisisProduccion() {
   const { startDate, endDate, setStartDate, setEndDate } = useDateForm();
