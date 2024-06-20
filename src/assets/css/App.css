@@ -340,12 +340,6 @@ button:hover {
   background-color: #E26561;
 }
 
-/* Estilo para el contenedor del gráfico */
-.chart-container {
-  margin-top: 2rem;
-  margin-left: 10%;  /* Margen izquierdo */
-  margin-right: 10%; /* Margen derecho */
-}
 
 .select-agrupamiento {
   width: 30%; /* O el tamaño que consideres apropiado */

@@ -1,0 +1,10 @@
+.chart-container {
+    margin-top: 2rem;
+    margin-left: 10%;  /* Margen izquierdo */
+    margin-right: 10%; /* Margen derecho */
+    border: 1px solid rgba(0,0,0,1); /* Bordes de la gráfica */
+    padding: 10px; /* Bordes internos */
+    background-color: #ffffff;
+    height: 80vh; /* Altura añadida */
+
+  }
