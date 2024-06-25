@@ -74,3 +74,31 @@ export const obtenerTablasPorMedidaYFecha = async (
     throw error;
   }
 };
+
+export const obtenerVolumenPorGrosor = async (
+  startDate,
+  endDate,
+  agrupamiento
+) => {
+  const token = localStorage.getItem("accessToken");
+  try {
+    const response = await axios.get(
+      `${process.env.REACT_APP_URL_API}/tablasdetectadas/volumen-por-grosor`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          accessToken: token,
+        },
+        params: {
+          startDate,
+          endDate,
+          agrupamiento,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener volumen por grosor", error);
+    throw error;
+  }
+};
