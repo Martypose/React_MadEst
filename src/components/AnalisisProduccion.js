@@ -11,6 +11,7 @@ function AnalisisProduccion() {
     maxVolume: 0,
     averageVolume: 0,
     minVolumeDays: [],
+    dataAvailable: false,
   });
 
   const fetchFilteredData = async () => {
@@ -39,15 +40,28 @@ function AnalisisProduccion() {
             maxVolume: 0,
             averageVolume: 0,
             minVolumeDays: [],
+            dataAvailable: false,
           });
         }
       } catch (error) {
         console.error("Error al obtener los datos:", error);
+        setStats({
+          maxVolume: 0,
+          averageVolume: 0,
+          minVolumeDays: [],
+          dataAvailable: false,
+        });
       }
     } else {
       console.log(
         "Ambas fechas deben estar seleccionadas y ser válidas para filtrar los datos"
       );
+      setStats({
+        maxVolume: 0,
+        averageVolume: 0,
+        minVolumeDays: [],
+        dataAvailable: false,
+      });
     }
   };
 
@@ -60,28 +74,46 @@ function AnalisisProduccion() {
           maxVolume: 0,
           averageVolume: 0,
           minVolumeDays: [],
+          dataAvailable: false,
         });
         return;
       }
 
-      const volumes = validData.map((item) => item.volumen_cubico);
-      const maxVolume = Math.max(...volumes);
+      // Agrupar los volúmenes por fecha
+      const volumeByDate = {};
+      validData.forEach((item) => {
+        if (!volumeByDate[item.fecha]) {
+          volumeByDate[item.fecha] = 0;
+        }
+        volumeByDate[item.fecha] += item.volumen_cubico;
+      });
+
+      const volumes = Object.values(volumeByDate);
       const totalVolume = volumes.reduce((acc, curr) => acc + curr, 0);
       const averageVolume = totalVolume / volumes.length;
+      const maxVolume = Math.max(...volumes);
 
-      const numDaysToShow = validData.length > 10 ? 5 : 1;
-      const minVolumeDays = validData
+      const numDaysToShow = volumes.length > 10 ? 5 : 1;
+      const minVolumeDays = Object.keys(volumeByDate)
+        .map((fecha) => ({
+          fecha: formatDateWithDay(fecha),
+          volumen_cubico: volumeByDate[fecha],
+        }))
         .sort((a, b) => a.volumen_cubico - b.volumen_cubico)
-        .slice(0, numDaysToShow)
-        .map((item) => ({
-          fecha: formatDateWithDay(item.fecha),
-          volumen_cubico: item.volumen_cubico,
-        }));
+        .slice(0, numDaysToShow);
 
       setStats({
         maxVolume,
         averageVolume,
         minVolumeDays,
+        dataAvailable: true,
+      });
+    } else {
+      setStats({
+        maxVolume: 0,
+        averageVolume: 0,
+        minVolumeDays: [],
+        dataAvailable: false,
       });
     }
   };
@@ -177,6 +209,16 @@ function AnalisisProduccion() {
     setAgrupamiento("mes");
   };
 
+  const setTwoWeeksGroupedByDay = () => {
+    const now = new Date();
+    const startOfTwoWeeksAgo = new Date(now);
+    startOfTwoWeeksAgo.setDate(now.getDate() - 18);
+    const endOfCurrentDay = new Date(now);
+    setStartDate(startOfTwoWeeksAgo);
+    setEndDate(endOfCurrentDay);
+    setAgrupamiento("dia");
+  };
+
   return (
     <div className="analisis-produccion-container">
       <h1>Análisis de Producción</h1>
@@ -208,32 +250,45 @@ function AnalisisProduccion() {
       </form>
 
       <div className="botones-consulta">
-        <button onClick={setCurrentWeek}>Semana actual</button>
-        <button onClick={setCurrentMonth}>Mes actual</button>
-        <button onClick={setLastSixMonths}>Últimos 6 meses</button>
-        <button onClick={setCurrentYear}>Año actual</button>
+        <button className="btnbuscador" onClick={setCurrentWeek}>
+          Semana actual
+        </button>
+        <button className="btnbuscador" onClick={setTwoWeeksGroupedByDay}>
+          Dos semanas
+        </button>
+        <button className="btnbuscador" onClick={setCurrentMonth}>
+          Mes actual
+        </button>
+        <button className="btnbuscador" onClick={setLastSixMonths}>
+          Últimos 6 meses
+        </button>
+        <button className="btnbuscador" onClick={setCurrentYear}>
+          Año actual
+        </button>
       </div>
 
       {(agrupamiento === "dia" &&
         getDifferenceInDays(startDate, endDate) <= 365) ||
       agrupamiento === "semana" ||
       agrupamiento === "mes" ? (
-        <div className="estadisticas-container">
-          <p>Máximo: {stats.maxVolume} m³</p>
-          <p>Media: {stats.averageVolume.toFixed(2)} m³</p>
-          {agrupamiento === "dia" && (
-            <>
-              <p>Días menos productivos:</p>
-              <ul>
-                {stats.minVolumeDays.map((day, index) => (
-                  <li key={index}>
-                    {day.fecha}: {day.volumen_cubico} m³
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-        </div>
+        stats.dataAvailable && (
+          <div className="estadisticas-container">
+            <p>Máximo: {stats.maxVolume.toFixed(3)} m³</p>
+            <p>Media: {stats.averageVolume.toFixed(3)} m³</p>
+            {agrupamiento === "dia" && (
+              <>
+                <p>Días menos productivos:</p>
+                <ul>
+                  {stats.minVolumeDays.map((day, index) => (
+                    <li key={index}>
+                      {day.fecha}: {day.volumen_cubico.toFixed(3)} m³
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </div>
+        )
       ) : (
         <p>
           No se pueden calcular las estadísticas para el rango de fechas
