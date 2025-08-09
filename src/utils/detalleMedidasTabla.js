@@ -1,9 +1,7 @@
 export function DetalleMedidasTabla({ data }) {
   if (!data || data.length === 0) return null;
 
-  const fecha = data[0].fecha; // Asumimos que todos los elementos en 'data' tienen la misma fecha
-
-  // Ordenamos los datos por 'num_tablas' de mayor a menor
+  const fecha = data[0].fecha; // asumimos misma fecha en el grupo
   const sortedData = [...data].sort((a, b) => b.num_tablas - a.num_tablas);
 
   return (

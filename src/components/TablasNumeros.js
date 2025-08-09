@@ -2,54 +2,53 @@ import React, { useState, useEffect } from "react";
 import TablasNumerosChart from "../utils/TablasNumerosChart";
 import useDateForm from "../hooks/useDateForm";
 import { obtenerTablasPorMedidaYFecha } from "../services/tablasDetectadasService";
-import { DetalleMedidasTabla } from "../utils/detalleMedidasTabla";
 
 function TablasNumeros() {
   const { startDate, endDate, setStartDate, setEndDate } = useDateForm();
   const [agrupamiento, setAgrupamiento] = useState("dia");
   const [chartData, setChartData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const fetchFilteredData = async () => {
-    // Comprobar si ambas fechas están establecidas y son instancias válidas de Date
-    if (
+    const validDates =
       startDate instanceof Date &&
       !isNaN(startDate) &&
       endDate instanceof Date &&
-      !isNaN(endDate)
-    ) {
-      try {
-        const data = await obtenerTablasPorMedidaYFecha(
-          startDate,
-          endDate,
-          agrupamiento
-        );
-        setChartData(data);
-      } catch (error) {
-        console.error("Error al obtener los datos:", error);
-      }
-    } else {
-      console.log(
-        "Ambas fechas deben estar seleccionadas y ser válidas para filtrar los datos"
-      );
+      !isNaN(endDate);
+
+    if (!validDates) {
+      setChartData([]);
+      return;
+    }
+    try {
+      setLoading(true);
+      const data = await obtenerTablasPorMedidaYFecha(startDate, endDate, agrupamiento);
+      setChartData(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Error al obtener los datos:", error);
+      setChartData([]);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchFilteredData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startDate, endDate, agrupamiento]);
 
-  function formatDate(date) {
-    const d = new Date(date),
-      month = "" + (d.getMonth() + 1),
-      day = "" + d.getDate(),
-      year = d.getFullYear();
-
-    return [year, month.padStart(2, "0"), day.padStart(2, "0")].join("-");
-  }
+  const formatDate = (date) => {
+    if (!(date instanceof Date) || isNaN(date)) return "";
+    const d = new Date(date);
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    const year = d.getFullYear();
+    return [year, month, day].join("-");
+  };
 
   return (
     <div className="analisis-produccion-container">
-      <h1>Análisis de Producción</h1>
+      <h1>Tablas por medida (Catálogo)</h1>
 
       <form className="formulario-filtrado">
         <div className="fechas-container">
@@ -77,6 +76,7 @@ function TablasNumeros() {
         </select>
       </form>
 
+      {loading && <p>Cargando…</p>}
       <TablasNumerosChart data={chartData} />
     </div>
   );
