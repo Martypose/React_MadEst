@@ -87,15 +87,11 @@ function TablasNumerosChart({ data = [] }) {
         },
       },
       legend: {
-        labels: {
-          filter: (item) => !item.text.includes("hide"),
-        },
+        labels: { filter: (item) => !item.text.includes("hide") },
       },
     },
     scales: {
-      y: {
-        title: { display: true, text: "Número de piezas" },
-      },
+      y: { title: { display: true, text: "Número de piezas" } },
     },
   };
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import TablasNumerosChart from "../utils/TablasNumerosChart";
 import useDateForm from "../hooks/useDateForm";
 import { obtenerTablasPorMedidaYFecha } from "../services/tablasDetectadasService";
@@ -9,17 +9,12 @@ function TablasNumeros() {
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchFilteredData = async () => {
-    const validDates =
-      startDate instanceof Date &&
-      !isNaN(startDate) &&
-      endDate instanceof Date &&
-      !isNaN(endDate);
+  const fetchFilteredData = useCallback(async () => {
+    const valid =
+      startDate instanceof Date && !isNaN(startDate) &&
+      endDate instanceof Date && !isNaN(endDate);
+    if (!valid) { setChartData([]); return; }
 
-    if (!validDates) {
-      setChartData([]);
-      return;
-    }
     try {
       setLoading(true);
       const data = await obtenerTablasPorMedidaYFecha(startDate, endDate, agrupamiento);
@@ -30,12 +25,9 @@ function TablasNumeros() {
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchFilteredData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startDate, endDate, agrupamiento]);
+
+  useEffect(() => { fetchFilteredData(); }, [fetchFilteredData]);
 
   const formatDate = (date) => {
     if (!(date instanceof Date) || isNaN(date)) return "";
@@ -52,22 +44,10 @@ function TablasNumeros() {
 
       <form className="formulario-filtrado">
         <div className="fechas-container">
-          <input
-            type="date"
-            value={formatDate(startDate)}
-            onChange={(e) => setStartDate(new Date(e.target.value))}
-          />
-          <input
-            type="date"
-            value={formatDate(endDate)}
-            onChange={(e) => setEndDate(new Date(e.target.value))}
-          />
+          <input type="date" value={formatDate(startDate)} onChange={(e) => setStartDate(new Date(e.target.value))}/>
+          <input type="date" value={formatDate(endDate)} onChange={(e) => setEndDate(new Date(e.target.value))}/>
         </div>
-        <select
-          className="select-agrupamiento"
-          value={agrupamiento}
-          onChange={(e) => setAgrupamiento(e.target.value)}
-        >
+        <select className="select-agrupamiento" value={agrupamiento} onChange={(e) => setAgrupamiento(e.target.value)}>
           <option value="minuto">Minuto</option>
           <option value="hora">Hora</option>
           <option value="dia">Día</option>
