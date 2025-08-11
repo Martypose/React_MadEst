@@ -1,76 +1,233 @@
-// routes/estadisticas.js  — completo
-const express = require('express');
-const router = express.Router();
-const db = require('../lib/db');
+// src/components/Estadisticas.js
+import React, { useState, useEffect, useMemo } from "react";
+import useDateForm from "../hooks/useDateForm";
+import { obtenerEstadisticas } from "../services/estadisticasDetectadasService";
 
-// Convierte ISO (con Z) -> cadena MySQL **en UTC**
-function isoToMysqlUTC(v) {
-  if (!v) return null;
-  const d = new Date(v);
-  if (isNaN(d)) return null;
-  const pad = (n) => String(n).padStart(2, '0');
-  return `${d.getUTCFullYear()}-${pad(d.getUTCMonth()+1)}-${pad(d.getUTCDate())} ` +
-         `${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())}`;
+// Umbrales (puedes ajustarlos)
+const UMBRALES = {
+  cpu:  { ok: 40, warn: 70, high: 85 },    // %
+  mem:  { ok: 60, warn: 75, high: 85 },    // %
+  load: { ok: 0.50, warn: 0.75, high: 1 }, // fracción del máximo elegido
+  temp: { ok: 60, warn: 70, high: 80 },    // ºC
+};
+
+// Núcleos por equipo (si cambian, actualiza aquí)
+const CORES_BY_DEVICE = { "pi-cenital": 4, "pi-lateral": 4 };
+
+// === CONFIG: ¿cómo fijamos el límite de “load”? ===
+// true  → máximo = nº de núcleos (recomendado)
+// false → máximo estático (LOAD_STATIC_MAX)
+const LOAD_USE_CORES  = true;
+const LOAD_STATIC_MAX = 2;
+
+function coresFor(device) {
+  return CORES_BY_DEVICE[device] ?? 4;
 }
 
-router.get('/', async (req, res) => {
-  try {
-    const limit  = Math.min(parseInt(req.query.limit, 10)  || 15, 1000);
-    const offset = Math.max(parseInt(req.query.offset, 10) || 0, 0);
+function clampPct(x) {
+  const v = Number.isFinite(Number(x)) ? Number(x) : 0;
+  return Math.max(0, Math.min(100, v));
+}
 
-    // Rango recibido en ISO -> UTC para el WHERE (la DB guarda UTC)
-    const fromDate = isoToMysqlUTC(req.query.fromDate);
-    const toDate   = isoToMysqlUTC(req.query.toDate);
-    const hasRange = !!(fromDate && toDate);
+function formatDateInput(date) {
+  if (!(date instanceof Date) || isNaN(date.getTime())) return "";
+  const d = new Date(date);
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day   = String(d.getDate()).padStart(2, "0");
+  const year  = d.getFullYear();
+  return [year, month, day].join("-");
+}
 
-    // TZ objetivo para presentar (puedes cambiarla por env)
-    const TARGET_TZ = process.env.TARGET_TZ || 'Europe/Madrid';
-    // Fallback si no hay tablas de TZ: minutos de desfase local respecto a UTC (ej. 120 en CEST)
-    const FALLBACK_OFFSET_MIN = -new Date().getTimezoneOffset();
+// Si solo viene "fecha_utc" (UTC 'YYYY-MM-DD HH:mm:ss'), la convertimos a local
+function renderFechaUTCToLocal(s) {
+  if (!s) return "";
+  const d = new Date(String(s).replace(" ", "T") + "Z");
+  return isNaN(d) ? s : d.toLocaleString("es-ES", { dateStyle: "short", timeStyle: "medium" });
+}
 
-    // SELECT con fecha_local (CONVERT_TZ, o DATE_ADD si no hay TZ tables),
-    // y con alias 'fecha' = misma fecha_local (compat con front antiguo).
-    const selectSql = `
-      SELECT
-        id,
-        DATE_FORMAT(
-          IFNULL(
-            CONVERT_TZ(fecha, '+00:00', ?),
-            DATE_ADD(fecha, INTERVAL ? MINUTE)
-          ),
-          "%Y-%m-%d %H:%i:%s"
-        ) AS fecha_local,
-        DATE_FORMAT(
-          IFNULL(
-            CONVERT_TZ(fecha, '+00:00', ?),
-            DATE_ADD(fecha, INTERVAL ? MINUTE)
-          ),
-          "%Y-%m-%d %H:%i:%s"
-        ) AS fecha,  -- alias compat
-        DATE_FORMAT(fecha, "%Y-%m-%d %H:%i:%s") AS fecha_utc,
-        uso_cpu, uso_memoria, carga_cpu, temperatura, id_raspberry
-      FROM estadisticas
-      ${hasRange ? `WHERE fecha BETWEEN ? AND ?` : ``}
-      ORDER BY fecha DESC
-      LIMIT ${limit} OFFSET ${offset}
-    `;
+// Elige la fecha correcta SIN reconvertir lo que ya viene en local
+function pickFecha(stat) {
+  if (stat?.fecha_local) return stat.fecha_local; // ya es local (cadena)
+  if (stat?.fecha)       return stat.fecha;       // alias local si lo envías
+  if (stat?.fecha_utc)   return renderFechaUTCToLocal(stat.fecha_utc);
+  return "";
+}
 
-    // Pasamos TARGET_TZ y FALLBACK dos veces (fecha_local y alias fecha)
-    const selectArgs = hasRange
-      ? [TARGET_TZ, FALLBACK_OFFSET_MIN, TARGET_TZ, FALLBACK_OFFSET_MIN, fromDate, toDate]
-      : [TARGET_TZ, FALLBACK_OFFSET_MIN, TARGET_TZ, FALLBACK_OFFSET_MIN];
+function levelBy(value, kind, device, loadMaxForRow = 1) {
+  const v = Number(value) || 0;
+  const t = UMBRALES[kind];
 
-    const countSql  = `SELECT COUNT(*) AS total FROM estadisticas ${hasRange ? `WHERE fecha BETWEEN ? AND ?` : ``}`;
-    const countArgs = hasRange ? [fromDate, toDate] : [];
-
-    const totalRows = await db.query(countSql, countArgs);
-    const rows      = await db.query(selectSql, selectArgs);
-
-    res.json({ data: rows, total: totalRows[0]?.total ?? 0 });
-  } catch (err) {
-    console.log('Error en la consulta:', err);
-    res.status(500).send('Error en la consulta');
+  if (kind === "load") {
+    const r = loadMaxForRow > 0 ? v / loadMaxForRow : v;
+    if (r <= t.ok)   return "ok";
+    if (r <= t.warn) return "warn";
+    if (r <= t.high) return "high";
+    return "crit";
   }
-});
 
-module.exports = router;
+  if (v <= t.ok)   return "ok";
+  if (v <= t.warn) return "warn";
+  if (v <= t.high) return "high";
+  return "crit";
+}
+
+function Meter({ value, unit = "%", level = "ok", title = "", pctOverride }) {
+  const pct = clampPct(pctOverride == null ? Number(value) : Number(pctOverride));
+  return (
+    <div className="kpi">
+      <div className="kpi-top">
+        <span className={`badge ${level}`}>{title}</span>
+        <span className="kpi-val">
+          {Number(value).toFixed(unit === "°C" ? 1 : unit === "" ? 3 : 1)}{unit}
+        </span>
+      </div>
+      <div className="meter">
+        <div className={`bar ${level}`} style={{ width: `${pct}%` }} />
+      </div>
+    </div>
+  );
+}
+
+export default function Estadisticas() {
+  const { startDate, endDate, setStartDate, setEndDate } = useDateForm();
+  const [estadisticas, setEstadisticas] = useState([]);
+  const [totalRegistros, setTotalRegistros] = useState(0);
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const registrosPorPagina = 15;
+
+  const fechasValidas =
+    startDate instanceof Date && !isNaN(startDate.getTime()) &&
+    endDate   instanceof Date && !isNaN(endDate.getTime());
+
+  useEffect(() => {
+    const fetchEstadisticas = async () => {
+      if (!fechasValidas) { setEstadisticas([]); setTotalRegistros(0); return; }
+      try {
+        setLoading(true);
+        const resp = await obtenerEstadisticas(
+          startDate.toISOString(),
+          endDate.toISOString(),
+          registrosPorPagina,
+          (paginaActual - 1) * registrosPorPagina
+        );
+        setEstadisticas(resp.data ?? []);
+        setTotalRegistros(resp.total ?? 0);
+      } catch (e) {
+        console.error("Error al obtener las estadísticas:", e);
+        setEstadisticas([]); setTotalRegistros(0);
+      } finally { setLoading(false); }
+    };
+    fetchEstadisticas();
+  }, [startDate, endDate, paginaActual, fechasValidas]);
+
+  const totalPages = Math.max(1, Math.ceil(totalRegistros / registrosPorPagina));
+
+  const equipos = useMemo(() => {
+    const set = new Set((estadisticas || []).map(r => r.id_raspberry).filter(Boolean));
+    return Array.from(set.values());
+  }, [estadisticas]);
+
+  return (
+    <div className="analisis-produccion-container">
+      <h1>Estadísticas de la Raspberry Pi</h1>
+
+      <form className="formulario-filtrado">
+        <input type="date" value={formatDateInput(startDate)} onChange={(e) => setStartDate(new Date(e.target.value))}/>
+        <input type="date" value={formatDateInput(endDate)}   onChange={(e) => setEndDate(new Date(e.target.value))}/>
+      </form>
+
+      <div className="legend">
+        <span className="dot ok" /> Baja
+        <span className="dot warn" /> Aviso
+        <span className="dot high" /> Alta
+        <span className="dot crit" /> Crítica
+      </div>
+
+      {loading ? (
+        <p>Cargando…</p>
+      ) : (estadisticas?.length ? (
+        <>
+          <table className="tabla-datos tabla-stats">
+            <thead>
+              <tr>
+                <th style={{minWidth: 180}}>Fecha (local)</th>
+                <th>Equipo</th>
+                <th>Uso de CPU</th>
+                <th>Uso de Memoria</th>
+                <th>Carga (1m)</th>
+                <th>Temperatura</th>
+              </tr>
+            </thead>
+            <tbody>
+              {estadisticas.map((stat, idx) => {
+                const equipo = stat.id_raspberry || "-";
+                const cores  = coresFor(equipo);
+                const loadMax = LOAD_USE_CORES ? Math.max(1, cores) : LOAD_STATIC_MAX;
+
+                const cpuL  = levelBy(stat.uso_cpu, "cpu",  equipo, loadMax);
+                const memL  = levelBy(stat.uso_memoria, "mem",  equipo, loadMax);
+                const loadL = levelBy(stat.carga_cpu, "load", equipo, loadMax);
+                const tempL = levelBy(stat.temperatura, "temp", equipo, loadMax);
+
+                const loadPct = clampPct((Number(stat.carga_cpu || 0) / loadMax) * 100);
+
+                const rowLevel =
+                  ["crit","high","warn","ok"].find(l =>
+                    [cpuL,memL,loadL,tempL].includes(l)
+                  ) || "ok";
+
+                return (
+                  <tr key={idx} className={`row-${rowLevel}`}>
+                    <td className="fecha">{pickFecha(stat) || "—"}</td>
+                    <td className="equipo">
+                      <span className="chip">{equipo}</span>
+                    </td>
+                    <td><Meter value={stat.uso_cpu} unit="%"  level={cpuL}  title="CPU" /></td>
+                    <td><Meter value={stat.uso_memoria} unit="%" level={memL} title="Mem" /></td>
+                    <td>
+                      <div className="kpi">
+                        <div className="kpi-top">
+                          <span className={`badge ${loadL}`}>Load</span>
+                          <span className="kpi-val">
+                            {Number(stat.carga_cpu).toFixed(3)} / {loadMax.toFixed(3)}
+                            {LOAD_USE_CORES && <span className="muted"> ({cores} núc)</span>}
+                          </span>
+                        </div>
+                        <div className="meter">
+                          <div className={`bar ${loadL}`} style={{ width: `${loadPct}%` }} />
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <Meter
+                        value={stat.temperatura}
+                        unit="°C"
+                        level={tempL}
+                        title="Temp"
+                        // Escalo la barra a 90 ºC como “techo” visual
+                        pctOverride={(Number(stat.temperatura) / 90) * 100}
+                      />
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+
+          <div className="paginador">
+            <button onClick={() => setPaginaActual(p => Math.max(1, p - 1))} disabled={paginaActual <= 1}>
+              Anterior
+            </button>
+            <span>{`${paginaActual}/${totalPages}`}</span>
+            <button onClick={() => setPaginaActual(p => Math.min(totalPages, p + 1))} disabled={paginaActual >= totalPages}>
+              Siguiente
+            </button>
+          </div>
+        </>
+      ) : (
+        <p>Sin datos para el rango seleccionado.</p>
+      ))}
+    </div>
+  );
+}
