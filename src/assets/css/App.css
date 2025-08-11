@@ -383,3 +383,7 @@ tbody tr:nth-child(even) {
   margin-right: 1rem;
 
 }
+/* Semáforo sencillo para la tabla de stats */
+.tabla-datos td.ok   { color: #2e7d32; font-weight: 600; }   /* verde */
+.tabla-datos td.warn { color: #f9a825; font-weight: 600; }   /* ámbar */
+.tabla-datos td.bad  { color: #c62828; font-weight: 700; }   /* rojo  */

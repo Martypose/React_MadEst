@@ -3,6 +3,17 @@ import React, { useState, useEffect } from "react";
 import useDateForm from "../hooks/useDateForm";
 import { obtenerEstadisticas } from "../services/estadisticasDetectadasService";
 
+// Permite ajustar nº de núcleos desde .env si quieres (por defecto 4)
+const CORES = Number(process.env.REACT_APP_PI_CORES || 4);
+
+// Límites “sanos” (OK), de aviso (WARN) y rojos (BAD)
+const LIMITS = {
+  CPU_OK: 80, CPU_WARN: 90,           // %
+  MEM_OK: 80, MEM_WARN: 90,           // %
+  LOAD_OK: 0.7 * CORES, LOAD_WARN: 1.0 * CORES, // load 1 min (absoluto)
+  TEMP_OK: 70, TEMP_WARN: 80          // °C
+};
+
 function Estadisticas() {
   const { startDate, endDate, setStartDate, setEndDate } = useDateForm();
   const [estadisticas, setEstadisticas] = useState([]);
@@ -54,11 +65,29 @@ function Estadisticas() {
     return [year, month, day].join("-");
   }
 
-  // Formateo con decimales controlados; devuelve "—" si no hay dato
+  // Formateo con decimales controlados
   const fmt = (v, dec = 1) => {
     if (v === null || v === undefined) return "—";
     const n = Number(v);
     return isNaN(n) ? "—" : n.toFixed(dec);
+  };
+
+  // Clase por severidad
+  const cls = (val, type) => {
+    const v = Number(val);
+    if (isNaN(v)) return "";
+    switch (type) {
+      case "cpu":
+        return v < LIMITS.CPU_OK ? "ok" : v < LIMITS.CPU_WARN ? "warn" : "bad";
+      case "mem":
+        return v < LIMITS.MEM_OK ? "ok" : v < LIMITS.MEM_WARN ? "warn" : "bad";
+      case "load":
+        return v < LIMITS.LOAD_OK ? "ok" : v < LIMITS.LOAD_WARN ? "warn" : "bad";
+      case "temp":
+        return v < LIMITS.TEMP_OK ? "ok" : v < LIMITS.TEMP_WARN ? "warn" : "bad";
+      default:
+        return "";
+    }
   };
 
   return (
@@ -87,10 +116,13 @@ function Estadisticas() {
               <tr>
                 <th>Fecha</th>
                 <th>Equipo</th>
-                <th>Uso de CPU</th>
-                <th>Uso de Memoria</th>
-                <th>Carga de CPU</th>
-                <th>Temperatura</th>
+                <th>Uso de CPU&nbsp;({`≤ ${LIMITS.CPU_OK}%`})</th>
+                <th>Uso de Memoria&nbsp;({`≤ ${LIMITS.MEM_OK}%`})</th>
+                <th>
+                  Carga de CPU (1 min)&nbsp;
+                  {`(≤ ${LIMITS.LOAD_OK.toFixed(2)} / ${CORES} núcleos)`}
+                </th>
+                <th>Temperatura&nbsp;({`≤ ${LIMITS.TEMP_OK}°C`})</th>
               </tr>
             </thead>
             <tbody>
@@ -98,10 +130,18 @@ function Estadisticas() {
                 <tr key={stat.id ?? index}>
                   <td>{stat.fecha}</td>
                   <td>{stat.id_raspberry || stat.device_id || "—"}</td>
-                  <td>{fmt(stat.uso_cpu)}</td>
-                  <td>{fmt(stat.uso_memoria)}</td>
-                  <td>{fmt(stat.carga_cpu, 3)}</td>
-                  <td>{fmt(stat.temperatura, 1)}</td>
+                  <td className={cls(stat.uso_cpu, "cpu")}  title="OK <80%, aviso 80–90%, rojo ≥90%">
+                    {fmt(stat.uso_cpu)}
+                  </td>
+                  <td className={cls(stat.uso_memoria, "mem")} title="OK <80%, aviso 80–90%, rojo ≥90%">
+                    {fmt(stat.uso_memoria)}
+                  </td>
+                  <td className={cls(stat.carga_cpu, "load")} title={`OK < ${LIMITS.LOAD_OK.toFixed(2)}, aviso < ${LIMITS.LOAD_WARN.toFixed(2)}, rojo ≥ ${LIMITS.LOAD_WARN.toFixed(2)}`}>
+                    {fmt(stat.carga_cpu, 3)}
+                  </td>
+                  <td className={cls(stat.temperatura, "temp")} title="OK <70 °C, aviso 70–80 °C, rojo ≥80 °C">
+                    {fmt(stat.temperatura, 1)}
+                  </td>
                 </tr>
               ))}
             </tbody>
