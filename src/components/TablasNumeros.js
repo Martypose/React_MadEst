@@ -1,65 +1,93 @@
-import React, { useState, useEffect, useCallback } from "react";
-import TablasNumerosChart from "../utils/TablasNumerosChart";
-import useDateForm from "../hooks/useDateForm";
-import { obtenerTablasPorMedidaYFecha } from "../services/tablasDetectadasService";
+import React, { useEffect, useState } from "react";
+import { obtenerUltimasMedidas } from "../services/tablasDetectadasService";
 
-function TablasNumeros() {
-  const { startDate, endDate, setStartDate, setEndDate } = useDateForm();
-  const [agrupamiento, setAgrupamiento] = useState("dia");
-  const [chartData, setChartData] = useState([]);
+function fmt(n, d=2) { const v = Number(n); return Number.isFinite(v) ? v.toFixed(d) : "—"; }
+
+export default function TablasNumeros() {
+  const [limit, setLimit] = useState(500);
+  const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchFilteredData = useCallback(async () => {
-    const valid =
-      startDate instanceof Date && !isNaN(startDate) &&
-      endDate instanceof Date && !isNaN(endDate);
-    if (!valid) { setChartData([]); return; }
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+        const data = await obtenerUltimasMedidas(limit);
+        setRows(data);
+      } catch (e) {
+        console.error(e);
+        setRows([]);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [limit]);
 
-    try {
-      setLoading(true);
-      const data = await obtenerTablasPorMedidaYFecha(startDate, endDate, agrupamiento);
-      setChartData(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error("Error al obtener los datos:", error);
-      setChartData([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [startDate, endDate, agrupamiento]);
-
-  useEffect(() => { fetchFilteredData(); }, [fetchFilteredData]);
-
-  const formatDate = (date) => {
-    if (!(date instanceof Date) || isNaN(date)) return "";
-    const d = new Date(date);
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    const year = d.getFullYear();
-    return [year, month, day].join("-");
-  };
+  const total = rows.length;
+  const mediaAncho  = total ? rows.reduce((a,r)=>a+(Number(r.ancho_mm)||0),0)/total : 0;
+  const mediaGrosor = total ? rows.reduce((a,r)=>a+(Number(r.grosor_lateral_mm||r.grosor_mm)||0),0)/total : 0;
 
   return (
     <div className="analisis-produccion-container">
-      <h1>Tablas por medida (Catálogo)</h1>
+      <h1>Piezas recientes (mm reales)</h1>
 
-      <form className="formulario-filtrado">
-        <div className="fechas-container">
-          <input type="date" value={formatDate(startDate)} onChange={(e) => setStartDate(new Date(e.target.value))}/>
-          <input type="date" value={formatDate(endDate)} onChange={(e) => setEndDate(new Date(e.target.value))}/>
-        </div>
-        <select className="select-agrupamiento" value={agrupamiento} onChange={(e) => setAgrupamiento(e.target.value)}>
-          <option value="minuto">Minuto</option>
-          <option value="hora">Hora</option>
-          <option value="dia">Día</option>
-          <option value="semana">Semana</option>
-          <option value="mes">Mes</option>
-        </select>
-      </form>
+      <div className="formulario-filtrado" style={{display:"flex",gap:12,alignItems:"center"}}>
+        <label>Mostrar últimas</label>
+        <input type="number" min={10} max={1000} value={limit}
+               onChange={(e)=>setLimit(e.target.value)} />
+        <span className="muted">piezas</span>
+      </div>
 
       {loading && <p>Cargando…</p>}
-      <TablasNumerosChart data={chartData} />
+
+      {!loading && (
+        <>
+          <div className="estadisticas-container" style={{display:"flex",gap:24}}>
+            <p>Total: {total}</p>
+            <p>Ancho medio: {fmt(mediaAncho)} mm</p>
+            <p>Grosor medio: {fmt(mediaGrosor)} mm</p>
+          </div>
+
+          <div style={{overflowX:"auto"}}>
+            <table className="tabla-datos">
+              <thead>
+                <tr>
+                  <th>Fecha (UTC)</th>
+                  <th>Ancho (mm)</th>
+                  <th>Grosor (mm)</th>
+                  <th>Corr.</th>
+                  <th>Δcorr (mm)</th>
+                  <th>mm/px</th>
+                  <th>px σ</th>
+                  <th>rows</th>
+                  <th>xl / xr (px)</th>
+                  <th>edge_left (mm)</th>
+                  <th>tabla#frame</th>
+                  <th>dispositivo</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r, i) => (
+                  <tr key={i}>
+                    <td>{r.fecha ?? "—"}</td>
+                    <td>{fmt(r.ancho_mm)}</td>
+                    <td>{fmt(r.grosor_lateral_mm ?? r.grosor_mm)}</td>
+                    <td>{r.corregida ? "sí" : "no"}</td>
+                    <td>{fmt(r.delta_corr_mm)}</td>
+                    <td>{fmt(r.mm_por_px,3)}</td>
+                    <td>{fmt(r.ancho_px_std,1)}</td>
+                    <td>{r.rows_valid ?? "—"}</td>
+                    <td>{(r.xl_px??"—") + " / " + (r.xr_px??"—")}</td>
+                    <td>{fmt(r.edge_left_mm,1)}</td>
+                    <td>{(r.tabla_id??"-") + "#" + (r.frame??"-")}</td>
+                    <td>{r.device_id ?? r.camara_id ?? "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
     </div>
   );
 }
-
-export default TablasNumeros;
