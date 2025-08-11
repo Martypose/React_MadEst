@@ -38,6 +38,19 @@ export async function obtenerUltimasMedidas(limit = 500) {
   return Array.isArray(data) ? data : [];
 }
 
+export async function obtenerPiezas(startDate, endDate, opts = {}) {
+  const params = {
+    startDate: startDate instanceof Date ? startDate.toISOString() : startDate,
+    endDate:   endDate   instanceof Date ? endDate.toISOString()   : endDate,
+    limit:  Number(opts.limit ?? 200),
+    offset: Number(opts.offset ?? 0),
+    orderBy: String(opts.orderBy ?? 'fecha'),
+    orderDir: String(opts.orderDir ?? 'desc'),
+  };
+  const { data } = await axios.get(`${API}/tablasdetectadas/piezas`, { ...cfg(), params });
+  return data; // { data: [...], total: N }
+}
+
 // (Opcional) también exporto por defecto para quien prefiera import default
 const service = { obtenerCubicoFiltrado, obtenerTablasPorMedidaYFecha };
 export default service;
