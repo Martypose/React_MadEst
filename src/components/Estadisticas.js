@@ -30,7 +30,6 @@ function Estadisticas() {
           registrosPorPagina,
           (paginaActual - 1) * registrosPorPagina
         );
-        // La API devuelve el campo id_raspberry, así que estará en resp.data
         setEstadisticas(resp.data ?? []);
         setTotalRegistros(resp.total ?? 0);
       } catch (error) {
@@ -54,6 +53,13 @@ function Estadisticas() {
     const year  = d.getFullYear();
     return [year, month, day].join("-");
   }
+
+  // Formateo con decimales controlados; devuelve "—" si no hay dato
+  const fmt = (v, dec = 1) => {
+    if (v === null || v === undefined) return "—";
+    const n = Number(v);
+    return isNaN(n) ? "—" : n.toFixed(dec);
+  };
 
   return (
     <div className="analisis-produccion-container">
@@ -80,7 +86,7 @@ function Estadisticas() {
             <thead>
               <tr>
                 <th>Fecha</th>
-                <th>Identificador</th> {/* <-- CAMBIO 1 */}
+                <th>Equipo</th>
                 <th>Uso de CPU</th>
                 <th>Uso de Memoria</th>
                 <th>Carga de CPU</th>
@@ -89,13 +95,13 @@ function Estadisticas() {
             </thead>
             <tbody>
               {estadisticas.map((stat, index) => (
-                <tr key={index}>
+                <tr key={stat.id ?? index}>
                   <td>{stat.fecha}</td>
-                  <td>{stat.id_raspberry}</td> {/* <-- CAMBIO 2 */}
-                  <td>{stat.uso_cpu}</td>
-                  <td>{stat.uso_memoria}</td>
-                  <td>{stat.carga_cpu}</td>
-                  <td>{stat.temperatura}</td>
+                  <td>{stat.id_raspberry || stat.device_id || "—"}</td>
+                  <td>{fmt(stat.uso_cpu)}</td>
+                  <td>{fmt(stat.uso_memoria)}</td>
+                  <td>{fmt(stat.carga_cpu, 3)}</td>
+                  <td>{fmt(stat.temperatura, 1)}</td>
                 </tr>
               ))}
             </tbody>
