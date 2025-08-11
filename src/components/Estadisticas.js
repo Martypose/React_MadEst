@@ -3,30 +3,56 @@ import React, { useState, useEffect, useMemo } from "react";
 import useDateForm from "../hooks/useDateForm";
 import { obtenerEstadisticas } from "../services/estadisticasDetectadasService";
 
+// Umbrales (puedes ajustarlos)
 const UMBRALES = {
-  cpu:  { ok: 40, warn: 70, high: 85 },   // %
-  mem:  { ok: 60, warn: 75, high: 85 },   // %
-  load: { ok: 0.50, warn: 0.75, high: 1 },// fracción de núcleos (× cores)
-  temp: { ok: 60, warn: 70, high: 80 },   // °C
+  cpu:  { ok: 40, warn: 70, high: 85 },    // %
+  mem:  { ok: 60, warn: 75, high: 85 },    // %
+  load: { ok: 0.50, warn: 0.75, high: 1 }, // fracción del máximo elegido
+  temp: { ok: 60, warn: 70, high: 80 },    // ºC
 };
 
-// Ajusta aquí si alguna Pi tiene otros núcleos
-const CORES_BY_DEVICE = {
-  "pi-cenital": 4,
-  "pi-lateral": 4,
-};
+// Núcleos por equipo (si cambian, actualiza aquí)
+const CORES_BY_DEVICE = { "pi-cenital": 4, "pi-lateral": 4 };
+
+// === CONFIG: ¿cómo fijamos el límite de “load”? ===
+// true  → máximo = nº de núcleos (recomendado)
+// false → máximo estático (LOAD_STATIC_MAX)
+const LOAD_USE_CORES  = true;
+const LOAD_STATIC_MAX = 2;
 
 function coresFor(device) {
   return CORES_BY_DEVICE[device] ?? 4;
 }
 
-function levelBy(value, kind, device) {
+function clampPct(x) {
+  const v = Number.isFinite(Number(x)) ? Number(x) : 0;
+  return Math.max(0, Math.min(100, v));
+}
+
+function formatDateInput(date) {
+  if (!(date instanceof Date) || isNaN(date.getTime())) return "";
+  const d = new Date(date);
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day   = String(d.getDate()).padStart(2, "0");
+  const year  = d.getFullYear();
+  return [year, month, day].join("-");
+}
+
+// ⚠️ El backend nos da "YYYY-MM-DD HH:mm:ss" en UTC.
+// La tratamos como UTC añadiendo 'Z' y la mostramos en local.
+function renderFechaUTCToLocal(s) {
+  if (!s) return "";
+  const d = new Date(String(s).replace(" ", "T") + "Z");
+  if (isNaN(d)) return s;
+  return d.toLocaleString("es-ES", { dateStyle: "short", timeStyle: "medium" });
+}
+
+function levelBy(value, kind, device, loadMaxForRow = 1) {
   const v = Number(value) || 0;
   const t = UMBRALES[kind];
 
   if (kind === "load") {
-    const n = coresFor(device);
-    const r = n > 0 ? v / n : v; // ratio sobre capacidad
+    const r = loadMaxForRow > 0 ? v / loadMaxForRow : v;
     if (r <= t.ok)   return "ok";
     if (r <= t.warn) return "warn";
     if (r <= t.high) return "high";
@@ -39,15 +65,21 @@ function levelBy(value, kind, device) {
   return "crit";
 }
 
-function clampPct(x) {
-  const v = Number.isFinite(x) ? x : 0;
-  return Math.max(0, Math.min(100, v));
-}
-
-function asLocal(dateStr) {
-  // El backend devuelve "YYYY-MM-DD HH:mm:ss" (sin zona).
-  // Lo mostramos tal cual (ya viene en la TZ del servidor).
-  return dateStr || "";
+function Meter({ value, unit = "%", level = "ok", title = "", pctOverride }) {
+  const pct = clampPct(pctOverride == null ? Number(value) : Number(pctOverride));
+  return (
+    <div className="kpi">
+      <div className="kpi-top">
+        <span className={`badge ${level}`}>{title}</span>
+        <span className="kpi-val">
+          {Number(value).toFixed(unit === "°C" ? 1 : unit === "" ? 3 : 1)}{unit}
+        </span>
+      </div>
+      <div className="meter">
+        <div className={`bar ${level}`} style={{ width: `${pct}%` }} />
+      </div>
+    </div>
+  );
 }
 
 export default function Estadisticas() {
@@ -64,10 +96,7 @@ export default function Estadisticas() {
 
   useEffect(() => {
     const fetchEstadisticas = async () => {
-      if (!fechasValidas) {
-        setEstadisticas([]); setTotalRegistros(0);
-        return;
-      }
+      if (!fechasValidas) { setEstadisticas([]); setTotalRegistros(0); return; }
       try {
         setLoading(true);
         const resp = await obtenerEstadisticas(
@@ -88,39 +117,10 @@ export default function Estadisticas() {
 
   const totalPages = Math.max(1, Math.ceil(totalRegistros / registrosPorPagina));
 
-  function formatDateInput(date) {
-    if (!(date instanceof Date) || isNaN(date.getTime())) return "";
-    const d = new Date(date);
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const day   = String(d.getDate()).padStart(2, "0");
-    const year  = d.getFullYear();
-    return [year, month, day].join("-");
-  }
-
-  // Agrupa por equipo (opcionalmente, por si quieres hacer filtros después)
   const equipos = useMemo(() => {
     const set = new Set((estadisticas || []).map(r => r.id_raspberry).filter(Boolean));
     return Array.from(set.values());
   }, [estadisticas]);
-
-  function Meter({ value, unit = "%", level = "ok", title = "", pctOverride }) {
-    const pct = clampPct(
-      pctOverride == null ? Number(value) : Number(pctOverride)
-    );
-    return (
-      <div className="kpi">
-        <div className="kpi-top">
-          <span className={`badge ${level}`}>{title}</span>
-          <span className="kpi-val">
-            {Number(value).toFixed(unit === "°C" ? 1 : unit === "" ? 3 : 1)}{unit}
-          </span>
-        </div>
-        <div className="meter">
-          <div className={`bar ${level}`} style={{ width: `${pct}%` }} />
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="analisis-produccion-container">
@@ -145,7 +145,7 @@ export default function Estadisticas() {
           <table className="tabla-datos tabla-stats">
             <thead>
               <tr>
-                <th style={{minWidth: 160}}>Fecha</th>
+                <th style={{minWidth: 180}}>Fecha</th>
                 <th>Equipo</th>
                 <th>Uso de CPU</th>
                 <th>Uso de Memoria</th>
@@ -156,15 +156,16 @@ export default function Estadisticas() {
             <tbody>
               {estadisticas.map((stat, idx) => {
                 const equipo = stat.id_raspberry || "-";
-                const cpuL   = levelBy(stat.uso_cpu, "cpu", equipo);
-                const memL   = levelBy(stat.uso_memoria, "mem", equipo);
-                const loadL  = levelBy(stat.carga_cpu, "load", equipo);
-                const tempL  = levelBy(stat.temperatura, "temp", equipo);
+                const cores  = coresFor(equipo);
+                const loadMax = LOAD_USE_CORES ? Math.max(1, cores) : LOAD_STATIC_MAX;
 
-                const cores   = coresFor(equipo);
-                const loadPct = clampPct((Number(stat.carga_cpu || 0) / Math.max(1, cores)) * 100);
+                const cpuL  = levelBy(stat.uso_cpu, "cpu",  equipo, loadMax);
+                const memL  = levelBy(stat.uso_memoria, "mem",  equipo, loadMax);
+                const loadL = levelBy(stat.carga_cpu, "load", equipo, loadMax);
+                const tempL = levelBy(stat.temperatura, "temp", equipo, loadMax);
 
-                // Nivel de fila: si algo es crítico → crit; si no, coge el peor
+                const loadPct = clampPct((Number(stat.carga_cpu || 0) / loadMax) * 100);
+
                 const rowLevel =
                   ["crit","high","warn","ok"].find(l =>
                     [cpuL,memL,loadL,tempL].includes(l)
@@ -172,23 +173,19 @@ export default function Estadisticas() {
 
                 return (
                   <tr key={idx} className={`row-${rowLevel}`}>
-                    <td className="fecha">{asLocal(stat.fecha)}</td>
+                    <td className="fecha">{renderFechaUTCToLocal(stat.fecha)}</td>
                     <td className="equipo">
                       <span className="chip">{equipo}</span>
                     </td>
-                    <td>
-                      <Meter value={stat.uso_cpu} unit="%" level={cpuL} title="CPU" />
-                    </td>
-                    <td>
-                      <Meter value={stat.uso_memoria} unit="%" level={memL} title="Mem" />
-                    </td>
+                    <td><Meter value={stat.uso_cpu} unit="%"  level={cpuL}  title="CPU" /></td>
+                    <td><Meter value={stat.uso_memoria} unit="%" level={memL} title="Mem" /></td>
                     <td>
                       <div className="kpi">
                         <div className="kpi-top">
                           <span className={`badge ${loadL}`}>Load</span>
                           <span className="kpi-val">
-                            {Number(stat.carga_cpu).toFixed(3)}{" "}
-                            <span className="muted">({cores} núc)</span>
+                            {Number(stat.carga_cpu).toFixed(3)} / {loadMax.toFixed(3)}
+                            {LOAD_USE_CORES && <span className="muted"> ({cores} núc)</span>}
                           </span>
                         </div>
                         <div className="meter">
@@ -197,7 +194,14 @@ export default function Estadisticas() {
                       </div>
                     </td>
                     <td>
-                      <Meter value={stat.temperatura} unit="°C" level={tempL} title="Temp" pctOverride={(Number(stat.temperatura) / 90) * 100} />
+                      <Meter
+                        value={stat.temperatura}
+                        unit="°C"
+                        level={tempL}
+                        title="Temp"
+                        // Escalo la barra a 90 ºC como “techo” visual
+                        pctOverride={(Number(stat.temperatura) / 90) * 100}
+                      />
                     </td>
                   </tr>
                 );
