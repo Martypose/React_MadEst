@@ -30,6 +30,7 @@ function Estadisticas() {
           registrosPorPagina,
           (paginaActual - 1) * registrosPorPagina
         );
+        // La API devuelve el campo id_raspberry, así que estará en resp.data
         setEstadisticas(resp.data ?? []);
         setTotalRegistros(resp.total ?? 0);
       } catch (error) {
@@ -79,6 +80,7 @@ function Estadisticas() {
             <thead>
               <tr>
                 <th>Fecha</th>
+                <th>Identificador</th> {/* <-- CAMBIO 1 */}
                 <th>Uso de CPU</th>
                 <th>Uso de Memoria</th>
                 <th>Carga de CPU</th>
@@ -89,6 +91,7 @@ function Estadisticas() {
               {estadisticas.map((stat, index) => (
                 <tr key={index}>
                   <td>{stat.fecha}</td>
+                  <td>{stat.id_raspberry}</td> {/* <-- CAMBIO 2 */}
                   <td>{stat.uso_cpu}</td>
                   <td>{stat.uso_memoria}</td>
                   <td>{stat.carga_cpu}</td>
