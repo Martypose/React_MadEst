@@ -86,9 +86,8 @@ function RowDetails({ r }) {
               <span className="muted">—</span>
             )}
           </p>
-          <p>
-            Tabla#Frame: <code>{(r.tabla_id ?? "-") + "#" + (r.frame ?? "-")}</code>
-          </p>
+          {/* Antes: "Tabla#Frame". Quitado el frame. */}
+          <p>Tabla ID: <code>{fmtInt(r.tabla_id)}</code></p>
           <p>Equipo: <span className="chip">{r.device_id ?? r.camara_id ?? "—"}</span></p>
         </div>
 
@@ -165,7 +164,7 @@ export default function TablasNumeros() {
     const n = rows.length || 0;
     const meanW = n ? rows.reduce((a, r) => a + (Number(r.ancho_mm) || 0), 0) / n : 0;
     const meanT = n ? rows.reduce((a, r) => a + (Number(r.grosor_mm) || 0), 0) / n : 0;
-    const descN = rows.reduce((a, r) => a + (r.desc_final_descabezada ? 1 : 0), 0);
+    const descN = rows.reduce((a, r) => a + ((r.desc_final_descabezada ?? r.descabezada) ? 1 : 0), 0);
     return { n, meanW, meanT, descN };
   }, [rows]);
 
