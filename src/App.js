@@ -7,21 +7,25 @@ import TablasNumeros from "./components/TablasNumeros";
 import Estadisticas from "./components/Estadisticas";
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import Login from "./components/Login";
-import ProtectedRoute from "./ProtectedRoute";
+
+import { AuthProvider } from "./auth/AuthProvider";
+import ProtectedRoute from "./auth/ProtectedRoute";
 
 function App() {
   return (
     <div className="App">
-      <Router>
-        <Nav />
-        <Switch>
-          <Route path="/login" exact component={Login} />
-          <ProtectedRoute path="/estadisticas" exact component={Estadisticas} />
-          <ProtectedRoute path="/cubico" component={AnalisisProduccion} />
-          <ProtectedRoute path="/tablasnumero" component={TablasNumeros} />
-          <Redirect to="/cubico" />
-        </Switch>
-      </Router>
+      <AuthProvider>
+        <Router>
+          <Nav />
+          <Switch>
+            <Route path="/login" exact component={Login} />
+            <ProtectedRoute path="/estadisticas" exact component={Estadisticas} />
+            <ProtectedRoute path="/cubico" component={AnalisisProduccion} />
+            <ProtectedRoute path="/tablasnumero" component={TablasNumeros} />
+            <Redirect to="/cubico" />
+          </Switch>
+        </Router>
+      </AuthProvider>
     </div>
   );
 }
