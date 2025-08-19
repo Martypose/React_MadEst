@@ -1,29 +1,32 @@
 // src/lib/AuthService.js
-class AuthService {
-  static ACCESS_KEY  = "accessToken";
-  static REFRESH_KEY = "refreshToken";
-  static USER_KEY    = "username";
+import { api } from "./Api";
 
-  static getAccessToken()  { return localStorage.getItem(this.ACCESS_KEY)  || ""; }
-  static getRefreshToken() { return localStorage.getItem(this.REFRESH_KEY) || ""; }
-  static getUsername()     { return localStorage.getItem(this.USER_KEY)    || ""; }
+export const AuthService = {
+  async login({ name, password }) {
+    const { data } = await api.post("/login", { name, password });
+    const at = data?.accessToken?.accessToken;
+    const rt = data?.refreshToken?.refreshToken;
+    if (at && rt) {
+      localStorage.setItem("accessToken", at);
+      localStorage.setItem("refreshToken", rt);
+      if (data?.username) localStorage.setItem("username", data.username);
+      return { ok: true, username: data?.username || name };
+    }
+    return { ok: false, error: data?.error || "Credenciales inválidas" };
+  },
 
-  // Acepta payloads anidados (login/refresh actuales) o planos
-  static setTokens(payload) {
-    const at = payload?.accessToken?.accessToken ?? payload?.accessToken ?? "";
-    const rt = payload?.refreshToken?.refreshToken ?? payload?.refreshToken ?? "";
-    const un = payload?.username ?? this.getUsername();
-    if (at) localStorage.setItem(this.ACCESS_KEY, at);
-    if (rt) localStorage.setItem(this.REFRESH_KEY, rt);
-    if (un) localStorage.setItem(this.USER_KEY, un);
-  }
+  logout() {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("username");
+    window.location.assign("/login");
+  },
 
-  static clear() {
-    localStorage.removeItem(this.ACCESS_KEY);
-    localStorage.removeItem(this.REFRESH_KEY);
-    localStorage.removeItem(this.USER_KEY);
-  }
+  isAuthenticated() {
+    return !!localStorage.getItem("accessToken");
+  },
 
-  static isAuthenticated() { return !!this.getAccessToken(); }
-}
-export default AuthService;
+  username() {
+    return localStorage.getItem("username") || "";
+  },
+};

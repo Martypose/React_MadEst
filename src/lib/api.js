@@ -1,81 +1,78 @@
 // src/lib/api.js
 import axios from "axios";
-import AuthService from "./AuthService";
 
-const API_BASE = process.env.REACT_APP_URL_API;
+const api = axios.create({
+  baseURL: process.env.REACT_APP_URL_API,
+  withCredentials: true,
+});
 
-export const authless = axios.create({ baseURL: API_BASE, timeout: 30000 });
-
-let isRefreshing = false;
-let waiters = []; // {resolve,reject}
-
-function setAuthHeader(config) {
-  const token = AuthService.getAccessToken();
-  if (token) {
-    config.headers = config.headers || {};
-    config.headers["Authorization"] = `Bearer ${token}`;
-  }
-  return config;
-}
-
-async function refreshOnce() {
-  if (isRefreshing) {
-    return new Promise((resolve, reject) => waiters.push({ resolve, reject }));
-  }
-  isRefreshing = true;
-  try {
-    const resp = await authless.get(`/refreshtoken`, {
-      headers: {
-        "Content-Type": "application/json",
-        refreshToken: AuthService.getRefreshToken(),
-        username: AuthService.getUsername(),
-      },
-    });
-    if (!resp?.data?.accessToken || !resp?.data?.refreshToken) {
-      throw new Error("Respuesta de refresh inválida");
-    }
-    AuthService.setTokens(resp.data);
-    waiters.forEach(w => w.resolve());
-  } catch (err) {
-    waiters.forEach(w => w.reject(err));
-    throw err;
-  } finally {
-    isRefreshing = false;
-    waiters = [];
-  }
-}
+const get = (k) => localStorage.getItem(k);
+const set = (k, v) => localStorage.setItem(k, v);
+const del = (k) => localStorage.removeItem(k);
 
 function hardLogout() {
-  AuthService.clear();
-  window.location.replace("/login");
+  del("accessToken"); del("refreshToken"); del("username");
+  if (window.location.pathname !== "/login") window.location.assign("/login");
 }
 
-export const api = axios.create({ baseURL: API_BASE, timeout: 30000 });
+// --- Request: añade Authorization Bearer si hay token ---
+api.interceptors.request.use((config) => {
+  const token = get("accessToken");
+  if (token) config.headers["Authorization"] = `Bearer ${token}`;
+  if (!config.headers["Content-Type"]) config.headers["Content-Type"] = "application/json";
+  return config;
+});
 
-api.interceptors.request.use(setAuthHeader);
+// --- Refresh controlado para 402 ---
+let refreshPromise = null;
+
+async function refreshTokens() {
+  const refreshToken = get("refreshToken");
+  const username = get("username");
+  if (!refreshToken || !username) throw new Error("missing refresh credentials");
+  const { data } = await axios.get(`${process.env.REACT_APP_URL_API}/refreshtoken`, {
+    headers: { "Content-Type": "application/json", refreshToken, username },
+    withCredentials: true,
+  });
+  const at = data?.accessToken?.accessToken;
+  const rt = data?.refreshToken?.refreshToken;
+  if (at && rt) {
+    set("accessToken", at);
+    set("refreshToken", rt);
+    if (data?.username) set("username", data.username);
+    return at;
+  }
+  throw new Error("refresh failed");
+}
 
 api.interceptors.response.use(
-  (res) => res,
+  (r) => r,
   async (error) => {
-    const resp = error?.response;
-    const cfg  = error?.config || {};
-    if (!resp) return Promise.reject(error);
+    const { response, config } = error || {};
+    if (!response || !config) return Promise.reject(error);
 
-    if (resp.status === 401) {
+    if (response.status === 401) {
       hardLogout();
       return Promise.reject(error);
     }
-    if (resp.status === 402 && !cfg.__isRetryRequest) {
-      cfg.__isRetryRequest = true;
+
+    if (response.status === 402 && !config._retry) {
+      config._retry = true;
       try {
-        await refreshOnce();
-        setAuthHeader(cfg);
-        return api.request(cfg);
+        if (!refreshPromise) refreshPromise = refreshTokens();
+        const newAT = await refreshPromise;
+        refreshPromise = null;
+        config.headers["Authorization"] = `Bearer ${newAT}`;
+        return api.request(config);
       } catch (e) {
+        refreshPromise = null;
         hardLogout();
         return Promise.reject(e);
       }
     }
+
     return Promise.reject(error);
   }
 );
+
+export { api };
