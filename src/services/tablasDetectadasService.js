@@ -1,5 +1,5 @@
 // src/services/tablasDetectadasService.js
-import { api } from "../lib/Api";
+import { api } from "../lib/api";
 
 // Formato MySQL local "YYYY-MM-DD HH:mm:ss"
 function fmtLocal(dt) {

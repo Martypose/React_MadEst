@@ -1,5 +1,5 @@
 // src/services/estadisticasDetectadasService.js
-import { api } from "../lib/Api";
+import { api } from "../lib/api";
 
 // MySQL local
 function fmtLocal(dt) {

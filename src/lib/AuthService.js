@@ -1,5 +1,5 @@
 // src/lib/AuthService.js
-import { api } from "./Api";
+import { api } from "../lib/api";
 
 export const AuthService = {
   async login({ name, password }) {
