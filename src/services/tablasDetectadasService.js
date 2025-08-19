@@ -1,5 +1,6 @@
 // src/services/tablasDetectadasService.js
 import axios from "axios";
+import { api } from "../lib/Api";
 
 const API = process.env.REACT_APP_URL_API;
 
@@ -17,6 +18,24 @@ export async function obtenerCubicoFiltrado(startDate, endDate, agrupamiento = "
   };
   const { data } = await axios.get(`${API}/tablasdetectadas/cubico-por-fecha`, { ...cfg(), params });
   return Array.isArray(data) ? data : [];
+}
+
+function fmtLocal(dt) {
+  const pad = (n) => String(n).padStart(2, "0");
+  const y = dt.getFullYear(), m = pad(dt.getMonth()+1), d = pad(dt.getDate());
+  const hh = pad(dt.getHours()), mm = pad(dt.getMinutes()), ss = pad(dt.getSeconds());
+  return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
+}
+
+export async function obtenerCubicoFiltrado(startDate, endDate, agrupamiento="dia", descabezadaFilter="all") {
+  const params = {
+    startDate: fmtLocal(startDate),
+    endDate:   fmtLocal(endDate),
+    agrupamiento,
+    descabezadaFilter,
+  };
+  const { data } = await api.get("/tablasdetectadas/cubico-por-fecha", { params });
+  return data;
 }
 
 // Listado por medida/fecha (vista legacy)
