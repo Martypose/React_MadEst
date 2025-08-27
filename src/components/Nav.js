@@ -1,3 +1,4 @@
+// React_MadEst/src/components/Nav.js
 import React from "react";
 import "../assets/css/App.css";
 import swal from "sweetalert";
@@ -21,6 +22,7 @@ function Nav() {
           buttons: false,
         }).then(() => {
           localStorage.removeItem("accessToken");
+          localStorage.removeItem("refreshToken"); // ← añadido
           localStorage.removeItem("username");
           window.location.href = "/login";
         });
