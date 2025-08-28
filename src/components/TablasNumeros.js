@@ -18,24 +18,46 @@ const pct = (x, d = 1) => {
   return Number.isFinite(v) ? `${(v * 100).toFixed(d)}%` : "—";
 };
 
-// Deriva causa de descabezado si el backend aún no envía desc_causa
-function deriveDescCausa(r) {
-  const isDesc = !!(r.desc_final_descabezada ?? r.descabezada);
-  if (!isDesc) return "OK";
-
-  const tipOk = r.desc_tip_ok;
-  const shapeArrow = r.desc_shape_arrow;
-  if (tipOk === false && shapeArrow) return "TIP + FORMA";
-  if (tipOk === false) return "TIP";
-  if (shapeArrow) return "FORMA";
-  return "DESC";
+// ==== Causa unificada: 'none' | 'tip' | 'shape' | 'edge' | combinaciones '+'
+function normalizeDescCausa(s, row) {
+  if (typeof s === 'string' && s.trim()) {
+    const z = s.toLowerCase().replace(/\|/g,'+').replace(/forma/g,'shape').replace(/borde?s?|irregular/g,'edge');
+    const toks = Array.from(new Set(z.split(/[+,\s]+/).filter(Boolean)));
+    const valid = toks.filter(t => ['none','tip','shape','edge'].includes(t));
+    if (valid.length) {
+      const dropNone = valid.includes('none') && valid.length>1 ? valid.filter(t=>t!=='none') : valid;
+      const order = { tip:0, shape:1, edge:2, none:3 };
+      return dropNone.sort((a,b)=>order[a]-order[b]).join('+');
+    }
+  }
+  // fallback si no vino desc_causa: derivamos de campos
+  const tipBad = (row?.desc_tip_ok === false);
+  const shapeBad = (() => {
+    const r  = Number(row?.desc_shape_taper_ratio);
+    const a  = Number(row?.desc_shape_area_ratio);
+    const dr = Number(row?.desc_shape_taper_drop);
+    const tr = Number(row?.desc_shape_thr_ratio);
+    const ta = Number(row?.desc_shape_thr_area);
+    const td = Number(row?.desc_shape_thr_drop);
+    if (![r,a,dr,tr,ta,td].every(Number.isFinite)) return false;
+    return (r < tr && a < ta) || (dr > td);
+  })();
+  const edgeBad = row?.desc_edge_irregular === true;
+  const toks = [];
+  if (tipBad) toks.push('tip');
+  if (shapeBad) toks.push('shape');
+  if (edgeBad) toks.push('edge');
+  return toks.length ? toks.join('+') : 'none';
+}
+function prettyCausa(c) {
+  return c.split('+').map(t => (t === 'shape' ? 'FORMA' : t === 'edge' ? 'BORDE' : t.toUpperCase())).join('+');
 }
 
 function DescBadge({ row }) {
   const isDesc = !!(row.desc_final_descabezada ?? row.descabezada);
-  const causa = row.desc_causa || deriveDescCausa(row);
+  const causaNorm = normalizeDescCausa(row.desc_causa, row);
   const cls = isDesc ? "chip chip-danger" : "chip chip-success";
-  return <span className={cls}>{isDesc ? `DESC (${causa})` : "OK"}</span>;
+  return <span className={cls}>{isDesc ? `DESC (${prettyCausa(causaNorm)})` : "OK"}</span>;
 }
 
 function Copyable({ text, label }) {
@@ -45,19 +67,12 @@ function Copyable({ text, label }) {
       await navigator.clipboard.writeText(String(text));
       setCopied(true);
       setTimeout(() => setCopied(false), 1200);
-    } catch {
-      // no-op
-    }
+    } catch {}
   };
   return (
     <span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}>
       <code style={{ userSelect: "all" }}>{label ?? text}</code>
-      <button
-        type="button"
-        className="btn-mini"
-        onClick={doCopy}
-        title="Copiar al portapapeles"
-      >
+      <button type="button" className="btn-mini" onClick={doCopy} title="Copiar al portapapeles">
         {copied ? "Copiado" : "Copiar"}
       </button>
     </span>
@@ -72,6 +87,11 @@ function RowDetails({ r }) {
     r.desc_shape_area_ratio != null ||
     r.desc_shape_slope_norm != null ||
     r.desc_shape_centroid_pct != null;
+  const hasEdge =
+    r.desc_edge_irregular != null ||
+    r.edge_rmse_l_px != null || r.edge_rmse_r_px != null ||
+    r.edge_jitter_l_px != null || r.edge_jitter_r_px != null ||
+    r.widths_cv != null || r.rows_total != null || r.rows_kept != null;
 
   return (
     <div className="details">
@@ -86,7 +106,6 @@ function RowDetails({ r }) {
               <span className="muted">—</span>
             )}
           </p>
-          {/* Antes: "Tabla#Frame". Quitado el frame. */}
           <p>Tabla ID: <code>{fmtInt(r.tabla_id)}</code></p>
           <p>Equipo: <span className="chip">{r.device_id ?? r.camara_id ?? "—"}</span></p>
         </div>
@@ -123,7 +142,17 @@ function RowDetails({ r }) {
             <p>area ratio (top/bot): {fmt(r.desc_shape_area_ratio, 2)}</p>
             <p>slope norm.: {fmt(r.desc_shape_slope_norm, 2)}</p>
             <p>centroid (%): {fmt(r.desc_shape_centroid_pct, 2)}</p>
-            <p>flecha: {r.desc_shape_arrow === true ? "sí" : r.desc_shape_arrow === false ? "no" : "—"}</p>
+          </div>
+        )}
+
+        {hasEdge && (
+          <div>
+            <h4>Borde (irregularidad)</h4>
+            <p>irregular: {r.desc_edge_irregular === true ? "sí" : r.desc_edge_irregular === false ? "no" : "—"} {r.desc_edge_reason ? `(${r.desc_edge_reason})` : ""}</p>
+            <p>RMSE L/R: {fmt(r.edge_rmse_l_px, 2)} / {fmt(r.edge_rmse_r_px, 2)} px</p>
+            <p>Jitter L/R: {fmt(r.edge_jitter_l_px, 2)} / {fmt(r.edge_jitter_r_px, 2)} px</p>
+            <p>CV anchos por fila: {fmt(r.widths_cv, 4)}</p>
+            <p>Filas kept/total: {fmtInt(r.rows_kept)} / {fmtInt(r.rows_total)}</p>
           </div>
         )}
       </div>
@@ -140,7 +169,7 @@ export default function TablasNumeros() {
   const [rows, setRows] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [expanded, setExpanded] = useState(null); // id expandido
+  const [expanded, setExpanded] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -184,16 +213,8 @@ export default function TablasNumeros() {
 
       <form className="formulario-filtrado" style={{ gap: 12 }}>
         <div className="fechas-container">
-          <input
-            type="date"
-            value={formatDate(startDate)}
-            onChange={(e) => setStartDate(new Date(e.target.value))}
-          />
-          <input
-            type="date"
-            value={formatDate(endDate)}
-            onChange={(e) => setEndDate(new Date(e.target.value))}
-          />
+          <input type="date" value={formatDate(startDate)} onChange={(e) => setStartDate(new Date(e.target.value))} />
+          <input type="date" value={formatDate(endDate)} onChange={(e) => setEndDate(new Date(e.target.value))} />
         </div>
 
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -276,10 +297,7 @@ export default function TablasNumeros() {
                         <td>{fmt(r.mm_por_px, 3)}</td>
                         <td>{r.device_id ?? r.camara_id ?? "—"}</td>
                         <td>
-                          <button
-                            className="btn-mini"
-                            onClick={() => setExpanded((x) => (x === r.id ? null : r.id))}
-                          >
+                          <button className="btn-mini" onClick={() => setExpanded((x) => (x === r.id ? null : r.id))}>
                             {isExpanded ? "Ocultar" : "Detalles"}
                           </button>
                         </td>
@@ -296,23 +314,10 @@ export default function TablasNumeros() {
             </table>
           </div>
 
-          <div
-            className="paginador"
-            style={{ display: "flex", gap: 12, alignItems: "center", marginTop: 12 }}
-          >
-            <button
-              onClick={() => setOffset((o) => Math.max(0, o - limit))}
-              disabled={currentPage <= 1}
-            >
-              Anterior
-            </button>
+          <div className="paginador" style={{ display: "flex", gap: 12, alignItems: "center", marginTop: 12 }}>
+            <button onClick={() => setOffset((o) => Math.max(0, o - limit))} disabled={currentPage <= 1}>Anterior</button>
             <span>{currentPage} / {totalPages}</span>
-            <button
-              onClick={() => setOffset((o) => (o + limit < total ? o + limit : o))}
-              disabled={currentPage >= totalPages}
-            >
-              Siguiente
-            </button>
+            <button onClick={() => setOffset((o) => (o + limit < total ? o + limit : o))} disabled={currentPage >= totalPages}>Siguiente</button>
           </div>
         </>
       )}
