@@ -3,6 +3,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import useDateForm from "../hooks/useDateForm";
 import { obtenerPiezas } from "../services/tablasDetectadasService";
 
+const API = process.env.REACT_APP_URL_API;
+
 // Helpers de formato
 const fmt = (n, d = 2) => {
   const v = Number(n);
@@ -268,19 +270,24 @@ export default function TablasNumeros() {
                   <th>TIP % (thr)</th>
                   <th>mm/px</th>
                   <th>Equipo</th>
+                  <th>Fotos</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
                 {rows.map((r) => {
                   const isExpanded = expanded === r.id;
+                  const uid = r.tabla_uid;
+                  const cenURL = uid ? `${API}/thumbs/cenital/${uid}.jpg` : null;
+                  const latURL = uid ? `${API}/thumbs/lateral/${uid}.jpg` : null;
+
                   return (
                     <React.Fragment key={r.id}>
                       <tr>
                         <td>{fmtLocal(r.fecha_local)}</td>
                         <td>
-                          {r.tabla_uid ? (
-                            <Copyable text={r.tabla_uid} label={(r.tabla_uid || "").slice(0, 10) + "…"} />
+                          {uid ? (
+                            <Copyable text={uid} label={(uid || "").slice(0, 10) + "…"} />
                           ) : (
                             <span className="muted">—</span>
                           )}
@@ -297,6 +304,24 @@ export default function TablasNumeros() {
                         <td>{fmt(r.mm_por_px, 3)}</td>
                         <td>{r.device_id ?? r.camara_id ?? "—"}</td>
                         <td>
+                          {uid ? (
+                            <div className="thumbs" style={{ display: "flex", gap: 6 }}>
+                              <img
+                                src={cenURL}
+                                alt="Cenital"
+                                style={{ maxWidth: 120, maxHeight: 90, objectFit: "cover", borderRadius: 4 }}
+                                onError={(e) => { e.currentTarget.style.display = "none"; }}
+                              />
+                              <img
+                                src={latURL}
+                                alt="Lateral"
+                                style={{ maxWidth: 120, maxHeight: 90, objectFit: "cover", borderRadius: 4 }}
+                                onError={(e) => { e.currentTarget.style.display = "none"; }}
+                              />
+                            </div>
+                          ) : <span className="muted">—</span>}
+                        </td>
+                        <td>
                           <button className="btn-mini" onClick={() => setExpanded((x) => (x === r.id ? null : r.id))}>
                             {isExpanded ? "Ocultar" : "Detalles"}
                           </button>
@@ -304,7 +329,7 @@ export default function TablasNumeros() {
                       </tr>
                       {isExpanded && (
                         <tr className="row-details">
-                          <td colSpan={11}><RowDetails r={r} /></td>
+                          <td colSpan={12}><RowDetails r={r} /></td>
                         </tr>
                       )}
                     </React.Fragment>
